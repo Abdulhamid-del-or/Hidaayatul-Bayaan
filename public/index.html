@@ -1,0 +1,1237 @@
+<!DOCTYPE html>
+<html lang="om">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <meta
+    name="theme-color"
+    content="#087443"
+  >
+
+  <meta
+    name="description"
+    content="Kaayyoo - Sirna Qormaataa Barattootaa"
+  >
+
+  <title>Kaayyoo - Qormaata</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f2f6f4;
+      color: #17352a;
+    }
+
+    header {
+      background: #087443;
+      color: white;
+      padding: 18px;
+      text-align: center;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 26px;
+    }
+
+    header p {
+      margin: 5px 0 0;
+      opacity: .9;
+    }
+
+    .container {
+      max-width: 700px;
+      margin: auto;
+      padding: 18px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 18px;
+      padding: 20px;
+      margin-bottom: 16px;
+      box-shadow: 0 4px 16px rgba(0,0,0,.08);
+    }
+
+    h2 {
+      margin-top: 0;
+      color: #087443;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      padding: 13px;
+      margin: 7px 0 12px;
+      border: 1px solid #ccd8d2;
+      border-radius: 10px;
+      font-size: 15px;
+    }
+
+    textarea {
+      min-height: 90px;
+      resize: vertical;
+    }
+
+    button {
+      width: 100%;
+      border: 0;
+      border-radius: 12px;
+      padding: 14px;
+      background: #087443;
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 7px;
+    }
+
+    button.secondary {
+      background: #e7efeb;
+      color: #087443;
+    }
+
+    button.danger {
+      background: #c62828;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .menu {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .menu button {
+      min-height: 90px;
+      font-size: 17px;
+    }
+
+    .question {
+      border: 1px solid #dbe6e1;
+      padding: 15px;
+      border-radius: 14px;
+      margin: 12px 0;
+      background: #fbfdfc;
+    }
+
+    .option {
+      display: block;
+      padding: 10px;
+      background: #f0f5f2;
+      border-radius: 9px;
+      margin: 7px 0;
+    }
+
+    .option input {
+      width: auto;
+      margin-right: 8px;
+    }
+
+    .success {
+      background: #e5f7ed;
+      color: #075c35;
+      padding: 15px;
+      border-radius: 12px;
+      margin: 12px 0;
+    }
+
+    .error {
+      background: #ffebee;
+      color: #b71c1c;
+      padding: 15px;
+      border-radius: 12px;
+      margin: 12px 0;
+    }
+
+    .exam-code {
+      font-size: 25px;
+      font-weight: bold;
+      color: #087443;
+      text-align: center;
+      letter-spacing: 3px;
+      padding: 15px;
+      background: #edf8f2;
+      border-radius: 12px;
+    }
+
+    .timer {
+      position: sticky;
+      top: 75px;
+      background: #fff3cd;
+      color: #795600;
+      padding: 12px;
+      border-radius: 10px;
+      text-align: center;
+      font-weight: bold;
+      margin-bottom: 15px;
+      z-index: 5;
+    }
+
+    .result-number {
+      font-size: 42px;
+      color: #087443;
+      font-weight: bold;
+      text-align: center;
+    }
+
+    .back {
+      margin-bottom: 12px;
+    }
+
+    .small {
+      font-size: 13px;
+      color: #64756d;
+    }
+
+    .result-row {
+      padding: 12px;
+      border-bottom: 1px solid #ddd;
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <h1>🎯 Kaayyoo</h1>
+  <p>Sirna Qormaataa Barattootaa</p>
+</header>
+
+<div class="container">
+
+  <!-- HOME -->
+  <section id="home">
+
+    <div class="card">
+      <h2>👋 Baga Nagaan Dhufte</h2>
+      <p>
+        Kaayyoo keessatti qormaata uumuu,
+        qormaata linkiin qooduu fi bu'aa barattootaa
+        ilaalu dandeessa.
+      </p>
+    </div>
+
+    <div class="menu">
+      <button onclick="showPage('teacher')">
+        👨‍🏫<br>
+        Qormaata Uumi
+      </button>
+
+      <button onclick="showPage('join')">
+        👨‍🎓<br>
+        Qormaata Fudhadhu
+      </button>
+
+      <button onclick="showPage('manage')">
+        📋<br>
+        Qormaata Koo
+      </button>
+
+      <button onclick="showPage('health')">
+        ⚙️<br>
+        Sirna Ilaali
+      </button>
+    </div>
+
+  </section>
+
+
+  <!-- TEACHER -->
+  <section id="teacher" class="hidden">
+
+    <button
+      class="secondary back"
+      onclick="showPage('home')"
+    >
+      ← Duubatti
+    </button>
+
+    <div class="card">
+      <h2>👨‍🏫 Qormaata Haaraa Uumi</h2>
+
+      <input
+        id="teacherName"
+        placeholder="Maqaa barsiisaa"
+      >
+
+      <input
+        id="examTitle"
+        placeholder="Maqaa qormaataa"
+      >
+
+      <input
+        id="subject"
+        placeholder="Barnoota / Subject"
+      >
+
+      <input
+        id="grade"
+        placeholder="Kutaa / Grade"
+      >
+
+      <input
+        id="duration"
+        type="number"
+        value="30"
+        min="1"
+        placeholder="Yeroo daqiiqaa"
+      >
+
+      <button onclick="createExam()">
+        ➕ Qormaata Uumi
+      </button>
+
+      <div id="createMessage"></div>
+    </div>
+
+  </section>
+
+
+  <!-- MANAGE -->
+  <section id="manage" class="hidden">
+
+    <button
+      class="secondary back"
+      onclick="showPage('home')"
+    >
+      ← Duubatti
+    </button>
+
+    <div class="card">
+      <h2>📋 Qormaata Koo</h2>
+
+      <input
+        id="manageCode"
+        placeholder="Exam Code galchi"
+      >
+
+      <button onclick="loadManageExam()">
+        Qormaata Bani
+      </button>
+
+      <div id="manageArea"></div>
+    </div>
+
+  </section>
+
+
+  <!-- JOIN -->
+  <section id="join" class="hidden">
+
+    <button
+      class="secondary back"
+      onclick="showPage('home')"
+    >
+      ← Duubatti
+    </button>
+
+    <div class="card">
+      <h2>👨‍🎓 Qormaata Fudhadhu</h2>
+
+      <p class="small">
+        Barsiisaan kee Exam Code ykn link qormaataa yoo siif kenne,
+        asitti galchi.
+      </p>
+
+      <input
+        id="joinCode"
+        placeholder="Fakkeenya: ABC12345"
+      >
+
+      <input
+        id="studentName"
+        placeholder="Maqaa kee"
+      >
+
+      <button onclick="startExam()">
+        ▶️ Qormaata Jalqabi
+      </button>
+
+      <div id="joinMessage"></div>
+    </div>
+
+  </section>
+
+
+  <!-- EXAM -->
+  <section id="exam" class="hidden">
+
+    <div id="examInfo"></div>
+
+    <div
+      id="timer"
+      class="timer"
+    >
+      ⏱️ 00:00
+    </div>
+
+    <div id="questions"></div>
+
+    <button onclick="submitExam()">
+      ✅ Qormaata Ergi
+    </button>
+
+  </section>
+
+
+  <!-- RESULT -->
+  <section id="result" class="hidden">
+
+    <div class="card">
+      <h2>🎉 Bu'aa Qormaataa</h2>
+
+      <div id="resultArea"></div>
+
+      <button
+        onclick="showPage('home')"
+      >
+        🏠 Gara Home
+      </button>
+    </div>
+
+  </section>
+
+
+  <!-- HEALTH -->
+  <section id="health" class="hidden">
+
+    <button
+      class="secondary back"
+      onclick="showPage('home')"
+    >
+      ← Duubatti
+    </button>
+
+    <div class="card">
+      <h2>⚙️ Sirna</h2>
+
+      <button onclick="checkHealth()">
+        🔍 Database Ilaali
+      </button>
+
+      <div id="healthResult"></div>
+    </div>
+
+  </section>
+
+</div>
+
+
+<script>
+
+let currentExam = null;
+let currentQuestions = [];
+let timerInterval = null;
+let remainingSeconds = 0;
+
+
+/* PAGE */
+function showPage(page) {
+
+  const pages = [
+    "home",
+    "teacher",
+    "manage",
+    "join",
+    "exam",
+    "result",
+    "health"
+  ];
+
+  pages.forEach(id => {
+    document
+      .getElementById(id)
+      .classList.add("hidden");
+  });
+
+  document
+    .getElementById(page)
+    .classList.remove("hidden");
+
+  window.scrollTo(0, 0);
+}
+
+
+/* MESSAGE */
+function showError(element, message) {
+  element.innerHTML =
+    `<div class="error">❌ ${message}</div>`;
+}
+
+
+/* CREATE EXAM */
+async function createExam() {
+
+  const teacher_name =
+    document.getElementById("teacherName").value.trim();
+
+  const title =
+    document.getElementById("examTitle").value.trim();
+
+  const subject =
+    document.getElementById("subject").value.trim();
+
+  const grade =
+    document.getElementById("grade").value.trim();
+
+  const duration =
+    document.getElementById("duration").value;
+
+  const message =
+    document.getElementById("createMessage");
+
+  if (!teacher_name || !title) {
+    showError(
+      message,
+      "Maqaa barsiisaa fi maqaa qormaataa guuti."
+    );
+    return;
+  }
+
+  try {
+
+    const response = await fetch("/api/exams", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        teacher_name,
+        title,
+        subject,
+        grade,
+        duration
+      })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error);
+    }
+
+    message.innerHTML = `
+      <div class="success">
+        <h3>✅ Qormaanni uumameera!</h3>
+
+        <p>Qormaataaf code:</p>
+
+        <div class="exam-code">
+          ${data.exam.exam_code}
+        </div>
+
+        <p>
+          Amma gaaffiiwwan qormaataa itti dabali.
+        </p>
+
+        <button
+          onclick="openExamManager('${data.exam.exam_code}')"
+        >
+          ➕ Gaaffii Dabali
+        </button>
+      </div>
+    `;
+
+  } catch (error) {
+
+    showError(
+      message,
+      error.message || "Dogongorri uumame."
+    );
+
+  }
+}
+
+
+/* OPEN MANAGER */
+function openExamManager(code) {
+
+  document.getElementById("manageCode").value =
+    code;
+
+  showPage("manage");
+
+  loadManageExam();
+}
+
+
+/* LOAD MANAGE EXAM */
+async function loadManageExam() {
+
+  const code =
+    document
+      .getElementById("manageCode")
+      .value
+      .trim()
+      .toUpperCase();
+
+  const area =
+    document.getElementById("manageArea");
+
+  if (!code) {
+    showError(area, "Exam Code galchi.");
+    return;
+  }
+
+  try {
+
+    const response =
+      await fetch(
+        `/api/exams/code/${encodeURIComponent(code)}`
+      );
+
+    const data =
+      await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error);
+    }
+
+    currentExam = data.exam;
+
+    area.innerHTML = `
+
+      <hr>
+
+      <h3>${data.exam.title}</h3>
+
+      <p>
+        👨‍🏫 ${data.exam.teacher_name}
+      </p>
+
+      <p>
+        📚 ${data.exam.subject || "-"}
+      </p>
+
+      <p>
+        ⏱️ ${data.exam.duration} daqiiqaa
+      </p>
+
+      <p>🔗 Exam Code:</p>
+
+      <div class="exam-code">
+        ${data.exam.exam_code}
+      </div>
+
+      <button
+        onclick="copyExamLink('${data.exam.exam_code}')"
+      >
+        🔗 Link Qoodi
+      </button>
+
+      <hr>
+
+      <h3>➕ Gaaffii Haaraa</h3>
+
+      <textarea
+        id="qText"
+        placeholder="Gaaffii barreessi..."
+      ></textarea>
+
+      <select id="qType">
+        <option value="multiple">
+          Multiple Choice
+        </option>
+
+        <option value="truefalse">
+          Dhugaa / Soba
+        </option>
+      </select>
+
+      <input
+        id="optionA"
+        placeholder="A"
+      >
+
+      <input
+        id="optionB"
+        placeholder="B"
+      >
+
+      <input
+        id="optionC"
+        placeholder="C"
+      >
+
+      <input
+        id="optionD"
+        placeholder="D"
+      >
+
+      <select id="correctAnswer">
+        <option value="">
+          Deebii sirrii filadhu
+        </option>
+
+        <option value="A">A</option>
+        <option value="B">B</option>
+        <option value="C">C</option>
+        <option value="D">D</option>
+      </select>
+
+      <input
+        id="points"
+        type="number"
+        value="1"
+        min="1"
+        placeholder="Point"
+      >
+
+      <button onclick="addQuestion()">
+        ➕ Gaaffii Galchi
+      </button>
+
+      <div id="questionMessage"></div>
+
+      <hr>
+
+      <h3>
+        📚 Gaaffiiwwan (${data.questions.length})
+      </h3>
+
+      <div id="questionList">
+        ${
+          data.questions.length
+          ? data.questions.map((q, i) => `
+            <div class="question">
+              <b>${i + 1}. ${q.question}</b>
+
+              <p>A. ${q.option_a || ""}</p>
+              <p>B. ${q.option_b || ""}</p>
+              <p>C. ${q.option_c || ""}</p>
+              <p>D. ${q.option_d || ""}</p>
+            </div>
+          `).join("")
+          : "<p>Gaaffiin hin jirre.</p>"
+        }
+      </div>
+
+      <button
+        onclick="loadResults('${data.exam.id}')"
+      >
+        📊 Bu'aa Barattootaa Ilaali
+      </button>
+
+      <div id="resultsArea"></div>
+    `;
+
+  } catch (error) {
+
+    showError(area, error.message);
+
+  }
+}
+
+
+/* ADD QUESTION */
+async function addQuestion() {
+
+  if (!currentExam) return;
+
+  const message =
+    document.getElementById("questionMessage");
+
+  const body = {
+    question:
+      document.getElementById("qText").value.trim(),
+
+    type:
+      document.getElementById("qType").value,
+
+    option_a:
+      document.getElementById("optionA").value.trim(),
+
+    option_b:
+      document.getElementById("optionB").value.trim(),
+
+    option_c:
+      document.getElementById("optionC").value.trim(),
+
+    option_d:
+      document.getElementById("optionD").value.trim(),
+
+    correct_answer:
+      document.getElementById("correctAnswer").value,
+
+    points:
+      document.getElementById("points").value
+  };
+
+  if (!body.question || !body.correct_answer) {
+    showError(
+      message,
+      "Gaaffii fi deebii sirrii guuti."
+    );
+    return;
+  }
+
+  try {
+
+    const response =
+      await fetch(
+        `/api/exams/${currentExam.id}/questions`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(body)
+        }
+      );
+
+    const data =
+      await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error);
+    }
+
+    message.innerHTML =
+      `<div class="success">
+        ✅ Gaaffiin galmaa'eera.
+      </div>`;
+
+    document.getElementById("qText").value = "";
+    document.getElementById("optionA").value = "";
+    document.getElementById("optionB").value = "";
+    document.getElementById("optionC").value = "";
+    document.getElementById("optionD").value = "";
+    document.getElementById("correctAnswer").value = "";
+
+    loadManageExam();
+
+  } catch (error) {
+
+    showError(message, error.message);
+
+  }
+}
+
+
+/* COPY LINK */
+async function copyExamLink(code) {
+
+  const link =
+    `${window.location.origin}/?exam=${code}`;
+
+  try {
+
+    await navigator.clipboard.writeText(link);
+
+    alert(
+      "✅ Link qormaataa copy ta'eera."
+    );
+
+  } catch {
+
+    prompt(
+      "Link kana copy godhi:",
+      link
+    );
+
+  }
+}
+
+
+/* START EXAM */
+async function startExam() {
+
+  const code =
+    document
+      .getElementById("joinCode")
+      .value
+      .trim()
+      .toUpperCase();
+
+  const student =
+    document
+      .getElementById("studentName")
+      .value
+      .trim();
+
+  const message =
+    document.getElementById("joinMessage");
+
+  if (!code || !student) {
+    showError(
+      message,
+      "Maqaa fi Exam Code guuti."
+    );
+    return;
+  }
+
+  try {
+
+    const response =
+      await fetch(
+        `/api/exams/code/${encodeURIComponent(code)}`
+      );
+
+    const data =
+      await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error);
+    }
+
+    currentExam = data.exam;
+    currentQuestions = data.questions;
+
+    renderExam(student);
+
+    showPage("exam");
+
+    startTimer(
+      Number(currentExam.duration) * 60
+    );
+
+  } catch (error) {
+
+    showError(message, error.message);
+
+  }
+}
+
+
+/* RENDER EXAM */
+function renderExam(student) {
+
+  document.getElementById("examInfo").innerHTML = `
+    <div class="card">
+      <h2>${currentExam.title}</h2>
+
+      <p>
+        👨‍🎓 Barataa:
+        <b>${student}</b>
+      </p>
+
+      <p>
+        📚 ${currentExam.subject || ""}
+        ${currentExam.grade || ""}
+      </p>
+    </div>
+  `;
+
+  const container =
+    document.getElementById("questions");
+
+  container.innerHTML =
+    currentQuestions
+      .map((q, index) => {
+
+        const options = [];
+
+        if (q.option_a)
+          options.push(["A", q.option_a]);
+
+        if (q.option_b)
+          options.push(["B", q.option_b]);
+
+        if (q.option_c)
+          options.push(["C", q.option_c]);
+
+        if (q.option_d)
+          options.push(["D", q.option_d]);
+
+        return `
+          <div class="question">
+
+            <b>
+              ${index + 1}. ${q.question}
+            </b>
+
+            ${
+              options.map(([letter, text]) => `
+                <label class="option">
+                  <input
+                    type="radio"
+                    name="q_${q.id}"
+                    value="${letter}"
+                  >
+                  ${letter}. ${text}
+                </label>
+              `).join("")
+            }
+
+          </div>
+        `;
+
+      }).join("");
+}
+
+
+/* TIMER */
+function startTimer(seconds) {
+
+  clearInterval(timerInterval);
+
+  remainingSeconds = seconds;
+
+  updateTimer();
+
+  timerInterval =
+    setInterval(() => {
+
+      remainingSeconds--;
+
+      updateTimer();
+
+      if (remainingSeconds <= 0) {
+
+        clearInterval(timerInterval);
+
+        alert(
+          "⏰ Yeroon qormaataa xumurame."
+        );
+
+        submitExam();
+
+      }
+
+    }, 1000);
+}
+
+
+function updateTimer() {
+
+  const minutes =
+    Math.floor(remainingSeconds / 60);
+
+  const seconds =
+    remainingSeconds % 60;
+
+  document.getElementById("timer").textContent =
+    `⏱️ ${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+}
+
+
+/* SUBMIT */
+async function submitExam() {
+
+  if (!currentExam) return;
+
+  clearInterval(timerInterval);
+
+  const student =
+    document
+      .getElementById("studentName")
+      .value
+      .trim();
+
+  const answers = {};
+
+  currentQuestions.forEach(q => {
+
+    const selected =
+      document.querySelector(
+        `input[name="q_${q.id}"]:checked`
+      );
+
+    answers[q.id] =
+      selected ? selected.value : "";
+
+  });
+
+  try {
+
+    const response =
+      await fetch(
+        `/api/exams/${currentExam.id}/submit`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            student_name: student,
+            answers
+          })
+        }
+      );
+
+    const data =
+      await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error);
+    }
+
+    const r = data.result;
+
+    document.getElementById("resultArea").innerHTML = `
+
+      <div class="success">
+        <p>👨‍🎓 Barataa</p>
+        <h3>${r.student_name}</h3>
+      </div>
+
+      <div class="result-number">
+        ${r.percentage}%
+      </div>
+
+      <p style="text-align:center">
+        ${r.score} / ${r.total}
+      </p>
+
+      <div class="success">
+        ${
+          r.percentage >= 50
+          ? "✅ Qormaata milkoofteen xumurtee jirta."
+          : "📚 Qormaata irra deebi'anii barachuun gaarii dha."
+        }
+      </div>
+    `;
+
+    showPage("result");
+
+  } catch (error) {
+
+    alert(
+      "❌ " + error.message
+    );
+
+  }
+}
+
+
+/* RESULTS */
+async function loadResults(examId) {
+
+  const area =
+    document.getElementById("resultsArea");
+
+  area.innerHTML =
+    "<p>⏳ Bu'aa fe'aa jira...</p>";
+
+  try {
+
+    const response =
+      await fetch(
+        `/api/exams/${examId}/results`
+      );
+
+    const data =
+      await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error);
+    }
+
+    if (!data.results.length) {
+      area.innerHTML =
+        "<p>Barataan qormaata hin fudhanne.</p>";
+      return;
+    }
+
+    area.innerHTML = `
+      <div class="card">
+        <h3>📊 Bu'aa Barattootaa</h3>
+
+        ${
+          data.results.map((r, i) => `
+            <div class="result-row">
+
+              <b>
+                ${i + 1}. ${r.student_name}
+              </b>
+
+              <br>
+
+              Score:
+              ${r.score}/${r.total}
+
+              — <b>${r.percentage}%</b>
+
+            </div>
+          `).join("")
+        }
+
+      </div>
+    `;
+
+  } catch (error) {
+
+    showError(area, error.message);
+
+  }
+}
+
+
+/* HEALTH */
+async function checkHealth() {
+
+  const area =
+    document.getElementById("healthResult");
+
+  area.innerHTML =
+    "<p>⏳ Checking...</p>";
+
+  try {
+
+    const response =
+      await fetch("/api/health");
+
+    const data =
+      await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error);
+    }
+
+    area.innerHTML = `
+      <div class="success">
+        ✅ Kaayyoo sirriitti hojjechaa jira.<br>
+        ✅ Supabase walqabateera.
+      </div>
+    `;
+
+  } catch (error) {
+
+    showError(
+      area,
+      error.message
+    );
+
+  }
+}
+
+
+/* URL EXAM */
+const urlParams =
+  new URLSearchParams(
+    window.location.search
+  );
+
+const examFromUrl =
+  urlParams.get("exam");
+
+if (examFromUrl) {
+
+  document.getElementById("joinCode").value =
+    examFromUrl;
+
+  showPage("join");
+}
+
+</script>
+
+</body>
+  </html>
