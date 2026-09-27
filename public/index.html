@@ -2,565 +2,544 @@
 <html lang="om">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
 
   <meta name="theme-color" content="#087443">
-  <meta name="description" content="Kaayyoo - Sirna Qormaataa Barattootaa">
 
-  <link rel="manifest" href="/manifest.json">
+  <meta
+    name="description"
+    content="Kaayyoo - Sirna Qormaataa Barattootaa"
+  >
 
-  <title>Kaayyoo - Sirna Qormaataa</title>
+  <title>Kaayyoo 3.0</title>
 
   <style>
-    :root{
-      --green:#087443;
-      --green2:#0a8f55;
-      --light:#f4f8f6;
-      --white:#ffffff;
-      --dark:#10221a;
-      --gray:#68756f;
-      --border:#dce7e1;
-      --danger:#d93025;
-      --shadow:0 8px 25px rgba(0,0,0,.08);
-      --radius:18px;
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
     }
 
-    *{
-      box-sizing:border-box;
-      margin:0;
-      padding:0;
-      font-family:Arial, sans-serif;
+    :root {
+      --green: #087443;
+      --green2: #0a8f55;
+      --light: #f1f8f4;
+      --white: #ffffff;
+      --text: #17352a;
+      --muted: #718078;
+      --danger: #d62828;
+      --border: #dfe9e3;
+      --shadow: 0 8px 25px rgba(0,0,0,.08);
     }
 
-    body{
-      background:var(--light);
-      color:var(--dark);
-      min-height:100vh;
+    body {
+      font-family: Arial, sans-serif;
+      background: var(--light);
+      color: var(--text);
+      min-height: 100vh;
     }
 
-    button,input,select{
-      font:inherit;
+    button,
+    input,
+    select {
+      font: inherit;
     }
 
-    button{
-      border:0;
-      cursor:pointer;
+    button {
+      cursor: pointer;
     }
 
-    .app{
-      min-height:100vh;
-      padding-bottom:80px;
+    .hidden {
+      display: none !important;
     }
 
     /* HEADER */
-    header{
-      background:linear-gradient(135deg,var(--green),var(--green2));
-      color:white;
-      padding:18px 16px 22px;
-      position:sticky;
-      top:0;
-      z-index:50;
-      box-shadow:0 4px 18px rgba(0,0,0,.12);
+
+    header {
+      background: linear-gradient(
+        135deg,
+        #075c35,
+        #087443,
+        #0a9559
+      );
+      color: white;
+      padding: 15px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 3px 15px rgba(0,0,0,.15);
     }
 
-    .header-top{
-      max-width:1100px;
-      margin:auto;
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:12px;
+    .header-inner {
+      max-width: 1100px;
+      margin: auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
     }
 
-    .brand{
-      display:flex;
-      align-items:center;
-      gap:10px;
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
 
-    .logo{
-      width:45px;
-      height:45px;
-      border-radius:14px;
-      background:white;
-      color:var(--green);
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      font-size:24px;
-      font-weight:900;
-      box-shadow:0 5px 15px rgba(0,0,0,.15);
+    .logo {
+      width: 43px;
+      height: 43px;
+      border-radius: 50%;
+      background: white;
+      color: var(--green);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+      font-size: 18px;
     }
 
-    .brand h1{
-      font-size:21px;
+    .brand h1 {
+      font-size: 20px;
     }
 
-    .brand small{
-      display:block;
-      opacity:.85;
-      margin-top:3px;
-      font-size:11px;
+    .brand small {
+      display: block;
+      opacity: .85;
+      font-size: 11px;
+      margin-top: 2px;
     }
 
-    .icon-btn{
-      width:42px;
-      height:42px;
-      border-radius:50%;
-      background:rgba(255,255,255,.15);
-      color:white;
-      font-size:20px;
+    .menu-btn {
+      background: rgba(255,255,255,.16);
+      border: 1px solid rgba(255,255,255,.3);
+      color: white;
+      border-radius: 10px;
+      padding: 9px 12px;
     }
 
     /* MAIN */
-    main{
-      max-width:1100px;
-      margin:auto;
-      padding:20px 15px;
+
+    main {
+      max-width: 1100px;
+      margin: auto;
+      padding: 20px 14px 80px;
     }
 
-    .page{
-      display:none;
-      animation:fade .25s ease;
+    .page {
+      animation: fade .2s ease;
     }
 
-    .page.active{
-      display:block;
-    }
-
-    @keyframes fade{
-      from{
-        opacity:0;
-        transform:translateY(5px);
+    @keyframes fade {
+      from {
+        opacity: 0;
+        transform: translateY(5px);
       }
-      to{
-        opacity:1;
-        transform:none;
+      to {
+        opacity: 1;
+        transform: translateY(0);
       }
-    }
-
-    /* HERO */
-    .hero{
-      background:linear-gradient(135deg,#087443,#0b9258);
-      color:white;
-      border-radius:24px;
-      padding:25px 20px;
-      box-shadow:var(--shadow);
-      margin-bottom:20px;
-    }
-
-    .hero h2{
-      font-size:26px;
-      margin-bottom:8px;
-    }
-
-    .hero p{
-      opacity:.9;
-      line-height:1.6;
-      font-size:14px;
     }
 
     /* CARDS */
-    .grid{
-      display:grid;
-      grid-template-columns:repeat(4,1fr);
-      gap:14px;
+
+    .card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 18px;
+      margin-bottom: 16px;
+      box-shadow: var(--shadow);
     }
 
-    .card{
-      background:white;
-      border:1px solid var(--border);
-      border-radius:var(--radius);
-      padding:18px;
-      box-shadow:var(--shadow);
+    .card h2 {
+      margin-bottom: 7px;
+      font-size: 20px;
     }
 
-    .action-card{
-      cursor:pointer;
-      transition:.2s;
+    .card p {
+      color: var(--muted);
+      line-height: 1.5;
     }
 
-    .action-card:hover{
-      transform:translateY(-3px);
+    /* AUTH */
+
+    .auth-wrap {
+      max-width: 470px;
+      margin: 35px auto;
     }
 
-    .action-icon{
-      width:48px;
-      height:48px;
-      border-radius:14px;
-      background:#e8f6ef;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      font-size:24px;
-      margin-bottom:12px;
+    .auth-logo {
+      text-align: center;
+      margin-bottom: 20px;
     }
 
-    .action-card h3{
-      font-size:16px;
-      margin-bottom:5px;
+    .big-logo {
+      width: 78px;
+      height: 78px;
+      margin: auto;
+      border-radius: 25px;
+      background: var(--green);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 30px;
+      font-weight: 900;
+      box-shadow: var(--shadow);
     }
 
-    .action-card p{
-      color:var(--gray);
-      font-size:12px;
-      line-height:1.5;
+    .auth-logo h1 {
+      margin-top: 12px;
+      color: var(--green);
     }
 
-    /* STATS */
-    .stats{
-      display:grid;
-      grid-template-columns:repeat(4,1fr);
-      gap:12px;
-      margin-bottom:20px;
+    .auth-logo p {
+      color: var(--muted);
+      margin-top: 5px;
     }
 
-    .stat{
-      background:white;
-      border-radius:16px;
-      padding:16px;
-      border:1px solid var(--border);
+    .tabs {
+      display: flex;
+      background: #e7f1eb;
+      border-radius: 12px;
+      padding: 4px;
+      margin-bottom: 18px;
     }
 
-    .stat strong{
-      display:block;
-      font-size:25px;
-      color:var(--green);
-      margin-bottom:5px;
+    .tab {
+      flex: 1;
+      padding: 11px;
+      border: none;
+      background: transparent;
+      border-radius: 9px;
+      color: var(--muted);
+      font-weight: bold;
     }
 
-    .stat span{
-      color:var(--gray);
-      font-size:12px;
+    .tab.active {
+      background: white;
+      color: var(--green);
+      box-shadow: 0 2px 8px rgba(0,0,0,.08);
     }
 
-    /* SECTION */
-    .section-title{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:10px;
-      margin:25px 0 13px;
+    /* FORMS */
+
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: bold;
+      margin: 13px 0 6px;
     }
 
-    .section-title h2{
-      font-size:20px;
+    input,
+    select {
+      width: 100%;
+      border: 1px solid var(--border);
+      background: white;
+      border-radius: 11px;
+      padding: 12px;
+      outline: none;
+      color: var(--text);
     }
 
-    /* FORM */
-    .form-card{
-      max-width:700px;
-      margin:auto;
+    input:focus,
+    select:focus {
+      border-color: var(--green);
+      box-shadow: 0 0 0 3px rgba(8,116,67,.1);
     }
 
-    .field{
-      margin-bottom:15px;
+    .btn {
+      width: 100%;
+      border: none;
+      border-radius: 12px;
+      padding: 13px 16px;
+      font-weight: bold;
+      margin-top: 14px;
     }
 
-    label{
-      display:block;
-      font-weight:bold;
-      font-size:13px;
-      margin-bottom:7px;
+    .btn-primary {
+      background: var(--green);
+      color: white;
     }
 
-    input,select{
-      width:100%;
-      border:1px solid var(--border);
-      background:white;
-      border-radius:12px;
-      padding:13px 14px;
-      outline:none;
+    .btn-primary:hover {
+      background: #075c35;
     }
 
-    input:focus,select:focus{
-      border-color:var(--green);
-      box-shadow:0 0 0 3px rgba(8,116,67,.1);
+    .btn-secondary {
+      background: #e7f1eb;
+      color: var(--green);
     }
 
-    .two{
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      gap:14px;
+    .btn-danger {
+      background: #ffe9e9;
+      color: var(--danger);
     }
 
-    /* BUTTONS */
-    .btn{
-      padding:13px 17px;
-      border-radius:12px;
-      font-weight:bold;
-      transition:.2s;
+    .btn-small {
+      width: auto;
+      margin: 0;
+      padding: 9px 12px;
+      font-size: 13px;
     }
 
-    .btn-primary{
-      background:var(--green);
-      color:white;
+    /* DASHBOARD */
+
+    .welcome {
+      background: linear-gradient(
+        135deg,
+        #075c35,
+        #0a9559
+      );
+      color: white;
+      border-radius: 20px;
+      padding: 22px;
+      margin-bottom: 18px;
+      box-shadow: var(--shadow);
     }
 
-    .btn-primary:hover{
-      background:#065c36;
+    .welcome p {
+      color: rgba(255,255,255,.8);
+      margin-top: 5px;
     }
 
-    .btn-light{
-      background:#eaf3ee;
-      color:var(--green);
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-bottom: 18px;
     }
 
-    .btn-danger{
-      background:#fdebea;
-      color:var(--danger);
+    .stat {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 15px;
+      padding: 15px;
+      box-shadow: 0 4px 15px rgba(0,0,0,.05);
     }
 
-    .btn-full{
-      width:100%;
+    .stat-number {
+      font-size: 25px;
+      font-weight: 900;
+      color: var(--green);
     }
 
-    .buttons{
-      display:flex;
-      flex-wrap:wrap;
-      gap:10px;
+    .stat-label {
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 4px;
     }
 
-    /* EXAM CODE */
-    .code-box{
-      text-align:center;
-      background:#edf8f2;
-      border:2px dashed #73b899;
-      padding:20px;
-      border-radius:18px;
-      margin:18px 0;
+    .actions {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
     }
 
-    .code-box small{
-      display:block;
-      color:var(--gray);
-      margin-bottom:7px;
+    .action {
+      border: none;
+      background: white;
+      border-radius: 16px;
+      padding: 20px;
+      text-align: left;
+      border: 1px solid var(--border);
+      box-shadow: 0 4px 15px rgba(0,0,0,.05);
     }
 
-    .exam-code{
-      font-size:32px;
-      letter-spacing:5px;
-      color:var(--green);
-      font-weight:900;
+    .action-icon {
+      font-size: 28px;
+      margin-bottom: 10px;
+    }
+
+    .action strong {
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .action span {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    /* EXAM LIST */
+
+    .exam-item {
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 15px;
+      margin-top: 10px;
+      background: white;
+    }
+
+    .exam-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .exam-code {
+      display: inline-block;
+      margin-top: 9px;
+      background: #e8f6ee;
+      color: var(--green);
+      padding: 7px 10px;
+      border-radius: 8px;
+      font-weight: bold;
+      letter-spacing: 1px;
+    }
+
+    .exam-actions {
+      display: flex;
+      gap: 7px;
+      margin-top: 12px;
+      flex-wrap: wrap;
     }
 
     /* QUESTION */
-    .question{
-      background:white;
-      border:1px solid var(--border);
-      border-radius:18px;
-      padding:18px;
-      margin-bottom:15px;
-      box-shadow:var(--shadow);
+
+    .question-box {
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 15px;
+      margin-top: 12px;
+      background: white;
     }
 
-    .question-number{
-      color:var(--green);
-      font-weight:bold;
-      margin-bottom:8px;
+    .question-number {
+      color: var(--green);
+      font-weight: bold;
+      margin-bottom: 8px;
     }
 
-    .option{
-      display:flex;
-      align-items:center;
-      gap:9px;
-      padding:11px;
-      background:#f7faf8;
-      border-radius:10px;
-      margin-top:8px;
+    .option {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      background: #f5f8f6;
+      border: 1px solid var(--border);
+      padding: 10px;
+      border-radius: 9px;
+      margin-top: 7px;
     }
 
-    .option input{
-      width:auto;
+    .option input {
+      width: auto;
     }
 
     /* TIMER */
-    .timer{
-      position:sticky;
-      top:82px;
-      z-index:20;
-      background:#fff3cd;
-      color:#765600;
-      border-radius:12px;
-      padding:13px;
-      text-align:center;
-      font-weight:bold;
-      margin-bottom:15px;
+
+    .timer {
+      position: sticky;
+      top: 72px;
+      z-index: 50;
+      background: #fff4d6;
+      color: #7b5700;
+      border: 1px solid #f1d991;
+      border-radius: 12px;
+      padding: 12px;
+      text-align: center;
+      font-weight: bold;
+      margin-bottom: 15px;
     }
 
-    /* RESULTS */
-    .result-big{
-      text-align:center;
-      padding:25px;
+    /* RESULT */
+
+    .result-card {
+      text-align: center;
+      padding: 30px 18px;
     }
 
-    .percentage{
-      width:130px;
-      height:130px;
-      border-radius:50%;
-      background:#e8f6ef;
-      color:var(--green);
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      margin:15px auto;
-      font-size:32px;
-      font-weight:900;
+    .score {
+      width: 130px;
+      height: 130px;
+      border-radius: 50%;
+      margin: 20px auto;
+      background: #e7f5ed;
+      color: var(--green);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      border: 7px solid #bfe4cf;
     }
 
-    table{
-      width:100%;
-      border-collapse:collapse;
-      background:white;
-      border-radius:14px;
-      overflow:hidden;
-    }
-
-    th,td{
-      padding:12px;
-      border-bottom:1px solid var(--border);
-      text-align:left;
-      font-size:13px;
-    }
-
-    th{
-      background:#edf6f1;
-      color:var(--green);
-    }
-
-    /* EMPTY */
-    .empty{
-      text-align:center;
-      padding:35px 15px;
-      color:var(--gray);
-    }
-
-    .empty-icon{
-      font-size:45px;
-      margin-bottom:10px;
-    }
-
-    /* BOTTOM NAV */
-    .bottom-nav{
-      position:fixed;
-      bottom:0;
-      left:0;
-      right:0;
-      background:white;
-      border-top:1px solid var(--border);
-      display:flex;
-      justify-content:center;
-      z-index:100;
-      box-shadow:0 -5px 20px rgba(0,0,0,.06);
-    }
-
-    .nav-inner{
-      width:100%;
-      max-width:700px;
-      display:grid;
-      grid-template-columns:repeat(4,1fr);
-    }
-
-    .nav-btn{
-      background:white;
-      color:#718078;
-      padding:9px 4px 8px;
-      font-size:11px;
-    }
-
-    .nav-btn span{
-      display:block;
-      font-size:20px;
-      margin-bottom:3px;
-    }
-
-    .nav-btn.active{
-      color:var(--green);
-      font-weight:bold;
+    .score strong {
+      font-size: 30px;
     }
 
     /* TOAST */
-    .toast{
-      position:fixed;
-      left:50%;
-      bottom:90px;
-      transform:translateX(-50%) translateY(20px);
-      background:#17251e;
-      color:white;
-      padding:13px 18px;
-      border-radius:12px;
-      z-index:200;
-      opacity:0;
-      pointer-events:none;
-      transition:.25s;
-      max-width:90%;
-      text-align:center;
-      font-size:13px;
+
+    #toast {
+      position: fixed;
+      left: 50%;
+      bottom: 20px;
+      transform: translateX(-50%);
+      background: #17352a;
+      color: white;
+      padding: 12px 17px;
+      border-radius: 12px;
+      z-index: 999;
+      max-width: 90%;
+      text-align: center;
+      display: none;
     }
 
-    .toast.show{
-      opacity:1;
-      transform:translateX(-50%) translateY(0);
+    /* MENU */
+
+    .side-menu {
+      position: fixed;
+      top: 0;
+      right: -310px;
+      width: 290px;
+      height: 100vh;
+      background: white;
+      z-index: 500;
+      box-shadow: -8px 0 25px rgba(0,0,0,.15);
+      padding: 20px;
+      transition: .25s;
     }
 
-    /* LOADING */
-    .loading{
-      text-align:center;
-      padding:30px;
-      color:var(--gray);
+    .side-menu.open {
+      right: 0;
+    }
+
+    .side-menu button {
+      width: 100%;
+      padding: 13px;
+      border: none;
+      background: #f3f7f4;
+      color: var(--text);
+      text-align: left;
+      border-radius: 10px;
+      margin-top: 8px;
+    }
+
+    .close-menu {
+      background: #ffeaea !important;
+      color: var(--danger) !important;
     }
 
     /* MOBILE */
-    @media(max-width:800px){
-      .grid{
-        grid-template-columns:1fr 1fr;
+
+    @media (max-width: 700px) {
+      .stats {
+        grid-template-columns: repeat(2, 1fr);
       }
 
-      .stats{
-        grid-template-columns:1fr 1fr;
-      }
-    }
-
-    @media(max-width:500px){
-      main{
-        padding:15px 12px;
+      .actions {
+        grid-template-columns: 1fr;
       }
 
-      .hero{
-        padding:20px 16px;
+      main {
+        padding-top: 14px;
       }
 
-      .hero h2{
-        font-size:22px;
-      }
-
-      .grid{
-        grid-template-columns:1fr 1fr;
-        gap:10px;
-      }
-
-      .card{
-        padding:14px;
-      }
-
-      .action-icon{
-        width:42px;
-        height:42px;
-        font-size:20px;
-      }
-
-      .two{
-        grid-template-columns:1fr;
-        gap:0;
-      }
-
-      .exam-code{
-        font-size:25px;
-      }
-
-      th,td{
-        padding:9px 6px;
-        font-size:11px;
+      .exam-top {
+        flex-direction: column;
       }
     }
   </style>
@@ -568,1623 +547,2409 @@
 
 <body>
 
-<div class="app">
-
-  <!-- HEADER -->
-  <header>
-    <div class="header-top">
-
-      <div class="brand">
-        <div class="logo">K</div>
-        <div>
-          <h1>Kaayyoo</h1>
-          <small>Sirna Qormaataa Barattootaa</small>
-        </div>
+<header id="mainHeader" class="hidden">
+  <div class="header-inner">
+    <div class="brand">
+      <div class="logo">K</div>
+      <div>
+        <h1>Kaayyoo</h1>
+        <small>Sirna Qormaataa</small>
       </div>
-
-      <button class="icon-btn" onclick="showPage('settings')">
-        ⚙️
-      </button>
-
     </div>
-  </header>
 
-  <main>
+    <button
+      class="menu-btn"
+      onclick="openMenu()"
+    >
+      ☰
+    </button>
+  </div>
+</header>
 
-    <!-- HOME -->
-    <section id="home" class="page active">
+<main>
 
-      <div class="hero">
-        <h2>👋 Baga Nagaan Dhufte!</h2>
-        <p>
-          Kaayyoo keessatti qormaata uumuu,
-          barattootaaf qooduu fi bu'aa qormaataa
-          salphaatti bulchuu dandeessa.
-        </p>
-      </div>
+  <!-- AUTH -->
 
-      <div class="stats">
-        <div class="stat">
-          <strong id="statExams">0</strong>
-          <span>Qormaata</span>
-        </div>
+  <section id="authPage" class="page">
 
-        <div class="stat">
-          <strong id="statQuestions">0</strong>
-          <span>Gaaffii</span>
-        </div>
+    <div class="auth-wrap">
 
-        <div class="stat">
-          <strong id="statResults">0</strong>
-          <span>Bu'aa</span>
-        </div>
-
-        <div class="stat">
-          <strong>100%</strong>
-          <span>Ofumaan</span>
-        </div>
-      </div>
-
-      <div class="section-title">
-        <h2>Tajaajiloota</h2>
-      </div>
-
-      <div class="grid">
-
-        <div class="card action-card" onclick="showPage('teacher')">
-          <div class="action-icon">📝</div>
-          <h3>Qormaata Uumi</h3>
-          <p>Qormaata haaraa uumii jalqabi.</p>
-        </div>
-
-        <div class="card action-card" onclick="showPage('join')">
-          <div class="action-icon">🎓</div>
-          <h3>Qormaata Seeni</h3>
-          <p>Code fayyadamuun qormaata seeni.</p>
-        </div>
-
-        <div class="card action-card" onclick="showPage('manage')">
-          <div class="action-icon">📚</div>
-          <h3>Qormaata Koo</h3>
-          <p>Qormaata uumte bulchi.</p>
-        </div>
-
-        <div class="card action-card" onclick="showPage('results')">
-          <div class="action-icon">📊</div>
-          <h3>Bu'aa</h3>
-          <p>Bu'aa barattootaa ilaali.</p>
-        </div>
-
-      </div>
-
-      <div class="section-title">
-        <h2>Akkaataa itti fayyadamtuu</h2>
+      <div class="auth-logo">
+        <div class="big-logo">K</div>
+        <h1>Kaayyoo</h1>
+        <p>Sirna Qormaataa Barattootaa</p>
       </div>
 
       <div class="card">
-        <p style="line-height:1.8;color:var(--gray);font-size:14px">
-          <b>1.</b> Qormaata uumi → 
-          <b>2.</b> Gaaffii dabal → 
-          <b>3.</b> Code qoodii → 
-          <b>4.</b> Barattoonni seenu → 
-          <b>5.</b> Bu'aa ilaali.
-        </p>
-      </div>
 
-    </section>
+        <div class="tabs">
 
-
-    <!-- TEACHER -->
-    <section id="teacher" class="page">
-
-      <div class="section-title">
-        <h2>📝 Qormaata Haaraa Uumi</h2>
-      </div>
-
-      <div class="card form-card">
-
-        <div class="field">
-          <label>Maqaa Barsiisaa</label>
-          <input id="teacherName" placeholder="Fakkeenya: Abdulhamid">
-        </div>
-
-        <div class="field">
-          <label>Maqaa Qormaataa *</label>
-          <input id="examTitle" placeholder="Fakkeenya: Qormaata Herrega">
-        </div>
-
-        <div class="two">
-
-          <div class="field">
-            <label>Barnoota</label>
-            <input id="examSubject" placeholder="Herrega">
-          </div>
-
-          <div class="field">
-            <label>Kutaa</label>
-            <select id="examGrade">
-              <option value="">Filadhu</option>
-              <option>1</option>
-              <option>2</option>
-              <option>3</option>
-              <option>4</option>
-              <option>5</option>
-              <option>6</option>
-              <option>7</option>
-              <option>8</option>
-              <option>9</option>
-              <option>10</option>
-              <option>11</option>
-              <option>12</option>
-            </select>
-          </div>
-
-        </div>
-
-        <div class="field">
-          <label>Yeroo Qormaataa (daqiiqaa)</label>
-          <input id="examDuration" type="number" value="30" min="1">
-        </div>
-
-        <button class="btn btn-primary btn-full" id="createExamBtn">
-          ➕ Qormaata Uumi
-        </button>
-
-      </div>
-
-    </section>
-
-
-    <!-- MANAGE -->
-    <section id="manage" class="page">
-
-      <div class="section-title">
-        <h2>📚 Qormaata Bulchi</h2>
-      </div>
-
-      <div id="manageContent">
-        <div class="empty">
-          <div class="empty-icon">📚</div>
-          <p>Qormaata uumame asitti argita.</p>
-        </div>
-      </div>
-
-    </section>
-
-
-    <!-- JOIN -->
-    <section id="join" class="page">
-
-      <div class="section-title">
-        <h2>🎓 Qormaata Seeni</h2>
-      </div>
-
-      <div class="card form-card">
-
-        <div class="field">
-          <label>Maqaa Kee</label>
-          <input id="studentName" placeholder="Maqaa guutuu kee">
-        </div>
-
-        <div class="field">
-          <label>Exam Code</label>
-          <input
-            id="joinCode"
-            placeholder="Fakkeenya: A1B2C3D4"
-            style="text-transform:uppercase"
+          <button
+            id="loginTab"
+            class="tab active"
+            onclick="showAuth('login')"
           >
-        </div>
-
-        <button class="btn btn-primary btn-full" onclick="joinExam()">
-          🚀 Qormaata Seeni
-        </button>
-
-      </div>
-
-    </section>
-
-
-    <!-- EXAM -->
-    <section id="exam" class="page">
-
-      <div id="examInfo"></div>
-
-      <div class="timer">
-        ⏱️ Yeroo hafe:
-        <span id="timer">--:--</span>
-      </div>
-
-      <div id="questionsContainer"></div>
-
-      <button
-        class="btn btn-primary btn-full"
-        onclick="submitExam()"
-      >
-        ✅ Qormaata Xumuri
-      </button>
-
-    </section>
-
-
-    <!-- RESULT -->
-    <section id="result" class="page">
-
-      <div class="card result-big">
-
-        <div style="font-size:45px">🎉</div>
-
-        <h2>Qormaanni Xumurame!</h2>
-
-        <div class="percentage" id="resultPercentage">
-          0%
-        </div>
-
-        <h3 id="resultStudent">Barataa</h3>
-
-        <p style="margin-top:10px;color:var(--gray)">
-          Qabxii:
-          <b id="resultScore">0</b> /
-          <b id="resultTotal">0</b>
-        </p>
-
-        <div class="buttons" style="justify-content:center;margin-top:20px">
-          <button class="btn btn-primary" onclick="showPage('home')">
-            🏠 Home
+            Seeni
           </button>
 
-          <button class="btn btn-light" onclick="showPage('join')">
-            🎓 Qormaata Biraa
-          </button>
-        </div>
-
-      </div>
-
-    </section>
-
-
-    <!-- RESULTS -->
-    <section id="results" class="page">
-
-      <div class="section-title">
-        <h2>📊 Bu'aa Barattootaa</h2>
-      </div>
-
-      <div class="card">
-
-        <div class="field">
-          <label>Exam ID</label>
-          <input
-            id="resultExamId"
-            placeholder="Exam ID as keessa galchi"
+          <button
+            id="registerTab"
+            class="tab"
+            onclick="showAuth('register')"
           >
+            Galmaa'i
+          </button>
+
         </div>
 
-        <button
-          class="btn btn-primary"
-          onclick="loadResults()"
-        >
-          🔎 Bu'aa Ilaali
-        </button>
+        <!-- LOGIN -->
 
-      </div>
+        <div id="loginForm">
 
-      <div id="resultsContainer" style="margin-top:15px"></div>
+          <h2>Baga nagaan dhuftan</h2>
+          <p>Barsiisaa taatee seenuuf email fi password kee galchi.</p>
 
-    </section>
+          <label>Email</label>
+          <input
+            id="loginEmail"
+            type="email"
+            placeholder="email@example.com"
+          >
 
+          <label>Password</label>
+          <input
+            id="loginPassword"
+            type="password"
+            placeholder="Password"
+          >
 
-    <!-- SETTINGS -->
-    <section id="settings" class="page">
+          <button
+            class="btn btn-primary"
+            onclick="loginTeacher()"
+          >
+            🔐 Seeni
+          </button>
 
-      <div class="section-title">
-        <h2>⚙️ Settings</h2>
-      </div>
+          <button
+            class="btn btn-secondary"
+            onclick="showStudentJoin()"
+          >
+            👨‍🎓 Barataa ta'ee Qormaata Seeni
+          </button>
 
-      <div class="card">
-
-        <div class="section-title">
-          <h3>📱 App</h3>
         </div>
 
-        <button
-          class="btn btn-light btn-full"
-          onclick="installApp()"
-        >
-          📲 App Install Godhu
-        </button>
+        <!-- REGISTER -->
 
-        <br>
+        <div id="registerForm" class="hidden">
 
-        <button
-          class="btn btn-light btn-full"
-          onclick="checkHealth()"
-        >
-          🟢 Server fi Database Qori
-        </button>
+          <h2>Herrega Barsiisaa Uumi</h2>
+          <p>Herrega kee uumiitii qormaata kee bulchi.</p>
 
-        <br>
+          <label>Maqaa Guutuu</label>
+          <input
+            id="registerName"
+            type="text"
+            placeholder="Maqaa kee"
+          >
 
-        <button
-          class="btn btn-danger btn-full"
-          onclick="clearLocalData()"
-        >
-          🗑️ Data Bilbila Irraa Haqi
-        </button>
+          <label>Email</label>
+          <input
+            id="registerEmail"
+            type="email"
+            placeholder="email@example.com"
+          >
+
+          <label>Password</label>
+          <input
+            id="registerPassword"
+            type="password"
+            placeholder="Yoo xiqqaate qubee 6"
+          >
+
+          <label>Password irra deebi'i</label>
+          <input
+            id="registerPassword2"
+            type="password"
+            placeholder="Password kee irra deebi'i"
+          >
+
+          <button
+            class="btn btn-primary"
+            onclick="registerTeacher()"
+          >
+            ✨ Galmaa'i
+          </button>
+
+        </div>
 
       </div>
-
-      <div class="card" style="margin-top:15px">
-        <h3>Kaayyoo</h3>
-        <p style="color:var(--gray);margin-top:7px">
-          Sirna Qormaataa Barattootaa
-        </p>
-        <p style="color:var(--gray);margin-top:7px;font-size:12px">
-          Version 2.0
-        </p>
-      </div>
-
-    </section>
-
-  </main>
-
-
-  <!-- BOTTOM NAV -->
-  <nav class="bottom-nav">
-
-    <div class="nav-inner">
-
-      <button class="nav-btn active" data-page="home" onclick="showPage('home')">
-        <span>🏠</span>
-        Home
-      </button>
-
-      <button class="nav-btn" data-page="teacher" onclick="showPage('teacher')">
-        <span>📝</span>
-        Uumi
-      </button>
-
-      <button class="nav-btn" data-page="join" onclick="showPage('join')">
-        <span>🎓</span>
-        Seeni
-      </button>
-
-      <button class="nav-btn" data-page="manage" onclick="showPage('manage')">
-        <span>📚</span>
-        Qormaata
-      </button>
 
     </div>
 
-  </nav>
+  </section>
 
-</div>
 
-<div id="toast" class="toast"></div>
+  <!-- DASHBOARD -->
 
+  <section
+    id="dashboardPage"
+    class="page hidden"
+  >
 
-<script>
+    <div class="welcome">
 
-const API_BASE = "";
-
-/* =========================
-   STATE
-========================= */
-
-let currentExam = null;
-let currentQuestions = [];
-let currentStudent = "";
-let timerInterval = null;
-let remainingSeconds = 0;
-
-let myExams =
-  JSON.parse(localStorage.getItem("kaayyoo_exams") || "[]");
-
-
-/* =========================
-   PAGE
-========================= */
-
-function showPage(page){
-
-  document.querySelectorAll(".page")
-    .forEach(p => p.classList.remove("active"));
-
-  const target = document.getElementById(page);
-
-  if(target){
-    target.classList.add("active");
-  }
-
-  document.querySelectorAll(".nav-btn")
-    .forEach(btn => {
-      btn.classList.toggle(
-        "active",
-        btn.dataset.page === page
-      );
-    });
-
-  window.scrollTo({
-    top:0,
-    behavior:"smooth"
-  });
-
-  if(page === "manage"){
-    renderManage();
-  }
-}
-
-
-/* =========================
-   TOAST
-========================= */
-
-function toast(message){
-
-  const el = document.getElementById("toast");
-
-  el.textContent = message;
-  el.classList.add("show");
-
-  setTimeout(() => {
-    el.classList.remove("show");
-  },3000);
-}
-
-
-/* =========================
-   CREATE EXAM
-========================= */
-
-document
-  .getElementById("createExamBtn")
-  .addEventListener("click", createExam);
-
-
-async function createExam(){
-
-  const teacher_name =
-    document.getElementById("teacherName").value.trim();
-
-  const title =
-    document.getElementById("examTitle").value.trim();
-
-  const subject =
-    document.getElementById("examSubject").value.trim();
-
-  const grade =
-    document.getElementById("examGrade").value;
-
-  const duration =
-    document.getElementById("examDuration").value;
-
-  if(!teacher_name || !title){
-
-    toast("⚠️ Maqaa barsiisaa fi maqaa qormaataa guuti.");
-
-    return;
-  }
-
-  const btn =
-    document.getElementById("createExamBtn");
-
-  btn.disabled = true;
-  btn.textContent = "⏳ Uumaa jira...";
-
-  try{
-
-    const response =
-      await fetch(API_BASE + "/api/exams",{
-        method:"POST",
-        headers:{
-          "Content-Type":"application/json"
-        },
-        body:JSON.stringify({
-          teacher_name,
-          title,
-          subject,
-          grade,
-          duration
-        })
-      });
-
-    const data = await response.json();
-
-    if(!response.ok){
-
-      throw new Error(
-        data.error || "Qormaata uumuu hin dandeenye."
-      );
-    }
-
-    currentExam = data.exam;
-
-    myExams =
-      myExams.filter(
-        e => e.id !== currentExam.id
-      );
-
-    myExams.unshift(currentExam);
-
-    localStorage.setItem(
-      "kaayyoo_exams",
-      JSON.stringify(myExams)
-    );
-
-    document.getElementById("statExams")
-      .textContent = myExams.length;
-
-    toast("✅ Qormaanni milkaa'inaan uumame!");
-
-    showExamCreated();
-
-  }catch(error){
-
-    console.error(error);
-
-    toast("❌ " + error.message);
-
-  }finally{
-
-    btn.disabled = false;
-    btn.textContent = "➕ Qormaata Uumi";
-  }
-}
-
-
-/* =========================
-   CREATED EXAM
-========================= */
-
-function showExamCreated(){
-
-  const exam = currentExam;
-
-  const page =
-    document.getElementById("manageContent");
-
-  page.innerHTML = `
-
-    <div class="card">
-
-      <div style="font-size:45px;text-align:center">
-        🎉
-      </div>
-
-      <h2 style="text-align:center">
-        Qormaanni Uumameera!
+      <h2>
+        👋 Baga nagaan dhuftan,
+        <span id="teacherName">Barsiisaa</span>
       </h2>
 
-      <p style="text-align:center;color:var(--gray);margin-top:7px">
-        ${escapeHTML(exam.title)}
+      <p>
+        Qormaata kee as irraa uumii, bulchi, fi bu'aa ilaali.
       </p>
 
-      <div class="code-box">
+    </div>
 
-        <small>Exam Code</small>
+    <div class="stats">
 
-        <div class="exam-code">
-          ${escapeHTML(exam.exam_code)}
-        </div>
-
-        <button
-          class="btn btn-light"
-          style="margin-top:15px"
-          onclick="copyText('${exam.exam_code}')"
+      <div class="stat">
+        <div
+          id="examCount"
+          class="stat-number"
         >
-          📋 Code Copy Godhi
-        </button>
-
+          0
+        </div>
+        <div class="stat-label">
+          Qormaata
+        </div>
       </div>
 
-      <div class="buttons">
-
-        <button
-          class="btn btn-primary"
-          onclick="addQuestionForm()"
+      <div class="stat">
+        <div
+          id="questionCount"
+          class="stat-number"
         >
-          ➕ Gaaffii Dabali
-        </button>
+          0
+        </div>
+        <div class="stat-label">
+          Gaaffii
+        </div>
+      </div>
 
-        <button
-          class="btn btn-light"
-          onclick="startTeacherExam()"
+      <div class="stat">
+        <div
+          id="resultCount"
+          class="stat-number"
         >
-          👁️ Qormaata Ilaali
-        </button>
+          0
+        </div>
+        <div class="stat-label">
+          Bu'aa
+        </div>
+      </div>
 
-        <button
-          class="btn btn-light"
-          onclick="shareExam('${exam.exam_code}')"
+      <div class="stat">
+        <div
+          id="averageScore"
+          class="stat-number"
         >
-          🔗 Link Qoodi
-        </button>
-
+          0%
+        </div>
+        <div class="stat-label">
+          Giddugaleessa
+        </div>
       </div>
 
     </div>
 
-    <div id="questionFormArea" style="margin-top:15px"></div>
+    <div class="actions">
 
-  `;
+      <button
+        class="action"
+        onclick="showPage('createExamPage')"
+      >
+        <div class="action-icon">📝</div>
+        <strong>Qormaata Uumi</strong>
+        <span>
+          Qormaata haaraa fi gaaffii isaa qopheessi.
+        </span>
+      </button>
 
-  showPage("manage");
-}
+      <button
+        class="action"
+        onclick="showPage('myExamsPage'); loadMyExams()"
+      >
+        <div class="action-icon">📚</div>
+        <strong>Qormaata Koo</strong>
+        <span>
+          Qormaata ati uumte ilaali.
+        </span>
+      </button>
+
+      <button
+        class="action"
+        onclick="showStudentJoin()"
+      >
+        <div class="action-icon">🎓</div>
+        <strong>Qormaata Seeni</strong>
+        <span>
+          Code fayyadamuun qormaata seeni.
+        </span>
+      </button>
+
+      <button
+        class="action"
+        onclick="checkHealth()"
+      >
+        <div class="action-icon">🟢</div>
+        <strong>Server Ilaali</strong>
+        <span>
+          Supabase fi server connection qoradhu.
+        </span>
+      </button>
+
+    </div>
+
+    <div class="card" style="margin-top:18px;">
+
+      <h2>Qormaata Koo</h2>
+      <p>
+        Qormaata dhiyoo kana ilaali.
+      </p>
+
+      <div id="dashboardExams">
+        <p style="margin-top:15px;">
+          Loading...
+        </p>
+      </div>
+
+    </div>
+
+  </section>
 
 
-/* =========================
-   ADD QUESTION FORM
-========================= */
+  <!-- CREATE EXAM -->
 
-function addQuestionForm(){
-
-  const area =
-    document.getElementById("questionFormArea");
-
-  area.innerHTML = `
+  <section
+    id="createExamPage"
+    class="page hidden"
+  >
 
     <div class="card">
 
-      <h2 style="margin-bottom:15px">
-        ➕ Gaaffii Haaraa
-      </h2>
+      <h2>📝 Qormaata Uumi</h2>
 
-      <div class="field">
-        <label>Gaaffii</label>
-        <input
-          id="qText"
-          placeholder="Gaaffii kee barreessi..."
-        >
-      </div>
+      <p>
+        Odeeffannoo qormaataa guuti.
+      </p>
 
-      <div class="field">
-        <label>Filannoo A</label>
-        <input id="qA">
-      </div>
+      <label>Maqaa Qormaataa</label>
 
-      <div class="field">
-        <label>Filannoo B</label>
-        <input id="qB">
-      </div>
+      <input
+        id="examTitle"
+        placeholder="Fakkeenya: Qormaata Herregaa"
+      >
 
-      <div class="field">
-        <label>Filannoo C</label>
-        <input id="qC">
-      </div>
+      <label>Subject</label>
 
-      <div class="field">
-        <label>Filannoo D</label>
-        <input id="qD">
-      </div>
+      <input
+        id="examSubject"
+        placeholder="Herrega"
+      >
 
-      <div class="two">
+      <label>Sadarkaa / Grade</label>
 
-        <div class="field">
-          <label>Deebii Sirrii</label>
+      <input
+        id="examGrade"
+        placeholder="Kutaa 8"
+      >
 
-          <select id="qCorrect">
-            <option value="">Filadhu</option>
-            <option value="a">A</option>
-            <option value="b">B</option>
-            <option value="c">C</option>
-            <option value="d">D</option>
-          </select>
-        </div>
+      <label>Yeroo Qormaataa (daqiiqaa)</label>
 
-        <div class="field">
-          <label>Qabxii</label>
-          <input
-            id="qPoints"
-            type="number"
-            value="1"
-            min="1"
-          >
-        </div>
-
-      </div>
+      <input
+        id="examDuration"
+        type="number"
+        value="30"
+        min="1"
+      >
 
       <button
-        class="btn btn-primary btn-full"
+        class="btn btn-primary"
+        onclick="createExam()"
+      >
+        ➕ Qormaata Uumi
+      </button>
+
+      <button
+        class="btn btn-secondary"
+        onclick="showPage('dashboardPage')"
+      >
+        ← Deebi'i
+      </button>
+
+    </div>
+
+    <div
+      id="createdExamBox"
+      class="card hidden"
+    >
+
+      <h2>✅ Qormaanni uumameera!</h2>
+
+      <p>
+        Code kana barattootaaf qoodi:
+      </p>
+
+      <div
+        id="newExamCode"
+        style="
+          font-size:28px;
+          color:#087443;
+          font-weight:900;
+          text-align:center;
+          padding:20px;
+          letter-spacing:3px;
+        "
+      ></div>
+
+      <button
+        class="btn btn-primary"
+        onclick="copyExamCode()"
+      >
+        📋 Code Copy Godhi
+      </button>
+
+      <button
+        class="btn btn-secondary"
+        onclick="openQuestionPage()"
+      >
+        ➕ Gaaffii Dabali
+      </button>
+
+    </div>
+
+  </section>
+
+
+  <!-- ADD QUESTIONS -->
+
+  <section
+    id="questionsPage"
+    class="page hidden"
+  >
+
+    <div class="card">
+
+      <h2>❓ Gaaffii Dabali</h2>
+
+      <p id="questionExamTitle">
+        Qormaata
+      </p>
+
+      <label>Gaaffii</label>
+
+      <input
+        id="questionText"
+        placeholder="Gaaffii kee barreessi"
+      >
+
+      <label>Deebii A</label>
+
+      <input
+        id="optionA"
+        placeholder="A"
+      >
+
+      <label>Deebii B</label>
+
+      <input
+        id="optionB"
+        placeholder="B"
+      >
+
+      <label>Deebii C</label>
+
+      <input
+        id="optionC"
+        placeholder="C"
+      >
+
+      <label>Deebii D</label>
+
+      <input
+        id="optionD"
+        placeholder="D"
+      >
+
+      <label>Deebii Sirrii</label>
+
+      <select id="correctAnswer">
+        <option value="">Filadhu</option>
+        <option value="a">A</option>
+        <option value="b">B</option>
+        <option value="c">C</option>
+        <option value="d">D</option>
+      </select>
+
+      <label>Point</label>
+
+      <input
+        id="questionPoints"
+        type="number"
+        value="1"
+        min="1"
+      >
+
+      <button
+        class="btn btn-primary"
         onclick="saveQuestion()"
       >
         💾 Gaaffii Olkaa'i
       </button>
 
-    </div>
-  `;
-}
+      <button
+        class="btn btn-secondary"
+        onclick="finishQuestions()"
+      >
+        ✅ Xumuri
+      </button>
 
-
-/* =========================
-   SAVE QUESTION
-========================= */
-
-async function saveQuestion(){
-
-  if(!currentExam){
-
-    toast("⚠️ Dura qormaata uumi.");
-
-    return;
-  }
-
-  const question =
-    document.getElementById("qText").value.trim();
-
-  const option_a =
-    document.getElementById("qA").value.trim();
-
-  const option_b =
-    document.getElementById("qB").value.trim();
-
-  const option_c =
-    document.getElementById("qC").value.trim();
-
-  const option_d =
-    document.getElementById("qD").value.trim();
-
-  const correct_answer =
-    document.getElementById("qCorrect").value;
-
-  const points =
-    document.getElementById("qPoints").value;
-
-  if(!question || !correct_answer){
-
-    toast("⚠️ Gaaffii fi deebii sirrii guuti.");
-
-    return;
-  }
-
-  try{
-
-    const response =
-      await fetch(
-        API_BASE +
-        "/api/exams/" +
-        currentExam.id +
-        "/questions",
-        {
-          method:"POST",
-          headers:{
-            "Content-Type":"application/json"
-          },
-          body:JSON.stringify({
-            question,
-            type:"multiple",
-            option_a,
-            option_b,
-            option_c,
-            option_d,
-            correct_answer,
-            points
-          })
-        }
-      );
-
-    const data = await response.json();
-
-    if(!response.ok){
-
-      throw new Error(
-        data.error || "Gaaffii olkaa'uu hin dandeenye."
-      );
-    }
-
-    toast("✅ Gaaffiin olkaa'ameera.");
-
-    document.getElementById("questionFormArea")
-      .innerHTML = "";
-
-    await loadExamQuestions();
-
-  }catch(error){
-
-    toast("❌ " + error.message);
-
-  }
-}
-
-
-/* =========================
-   LOAD QUESTIONS
-========================= */
-
-async function loadExamQuestions(){
-
-  if(!currentExam) return;
-
-  try{
-
-    const response =
-      await fetch(
-        API_BASE +
-        "/api/exams/code/" +
-        currentExam.exam_code
-      );
-
-    const data = await response.json();
-
-    if(!response.ok) return;
-
-    currentQuestions =
-      data.questions || [];
-
-    document.getElementById("statQuestions")
-      .textContent = currentQuestions.length;
-
-    renderManageQuestions();
-
-  }catch(error){
-
-    console.error(error);
-
-  }
-}
-
-
-/* =========================
-   MANAGE QUESTIONS
-========================= */
-
-function renderManageQuestions(){
-
-  const area =
-    document.getElementById("questionFormArea");
-
-  if(!area) return;
-
-  if(currentQuestions.length === 0){
-
-    area.innerHTML = `
-      <div class="card empty">
-        <div class="empty-icon">❓</div>
-        <p>Ammaaf gaaffiin hin jirre.</p>
-      </div>
-    `;
-
-    return;
-  }
-
-  area.innerHTML = `
-
-    <div class="section-title">
-      <h2>Gaaffilee (${currentQuestions.length})</h2>
     </div>
 
-    ${
-      currentQuestions.map((q,i)=>`
+    <div class="card">
 
-        <div class="question">
+      <h2>Gaaffilee Qormaataa</h2>
 
-          <div class="question-number">
-            Gaaffii ${i+1}
-          </div>
-
-          <div style="font-weight:bold;margin-bottom:10px">
-            ${escapeHTML(q.question)}
-          </div>
-
-          <p>A. ${escapeHTML(q.option_a || "")}</p>
-          <p>B. ${escapeHTML(q.option_b || "")}</p>
-          <p>C. ${escapeHTML(q.option_c || "")}</p>
-          <p>D. ${escapeHTML(q.option_d || "")}</p>
-
-          <div style="margin-top:10px;color:var(--green)">
-            Deebii: ${escapeHTML(q.correct_answer)}
-          </div>
-
-        </div>
-
-      `).join("")
-    }
-
-  `;
-}
-
-
-/* =========================
-   MANAGE
-========================= */
-
-function renderManage(){
-
-  if(!currentExam){
-
-    document.getElementById("manageContent").innerHTML = `
-
-      <div class="card empty">
-
-        <div class="empty-icon">📚</div>
-
-        <h3>Qormaata hin uumne</h3>
-
-        <p style="margin:8px 0 15px">
-          Qormaata kee jalqabuuf qormaata haaraa uumi.
+      <div id="questionList">
+        <p>
+          Gaaffiin hin jiru.
         </p>
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- MY EXAMS -->
+
+  <section
+    id="myExamsPage"
+    class="page hidden"
+  >
+
+    <div class="card">
+
+      <h2>📚 Qormaata Koo</h2>
+
+      <p>
+        Qormaata ati uumte hunda as keessatti argita.
+      </p>
+
+      <div id="myExamsList">
+        Loading...
+      </div>
+
+      <button
+        class="btn btn-secondary"
+        onclick="showPage('dashboardPage')"
+      >
+        ← Dashboard
+      </button>
+
+    </div>
+
+  </section>
+
+
+  <!-- STUDENT JOIN -->
+
+  <section
+    id="studentJoinPage"
+    class="page hidden"
+  >
+
+    <div class="auth-wrap">
+
+      <div class="card">
+
+        <h2>🎓 Qormaata Seeni</h2>
+
+        <p>
+          Maqaa kee fi Exam Code galchi.
+        </p>
+
+        <label>Maqaa Barataa</label>
+
+        <input
+          id="studentName"
+          placeholder="Maqaa kee"
+        >
+
+        <label>Exam Code</label>
+
+        <input
+          id="joinCode"
+          placeholder="AB12CD34"
+          style="text-transform:uppercase;"
+        >
 
         <button
           class="btn btn-primary"
-          onclick="showPage('teacher')"
+          onclick="joinExam()"
         >
-          ➕ Qormaata Uumi
+          🚀 Qormaata Seeni
+        </button>
+
+        <button
+          class="btn btn-secondary"
+          onclick="goBackFromStudent()"
+        >
+          ← Deebi'i
         </button>
 
       </div>
 
-    `;
+    </div>
 
-    return;
-  }
-
-  showExamCreated();
-
-  loadExamQuestions();
-}
+  </section>
 
 
-/* =========================
-   JOIN EXAM
-========================= */
+  <!-- EXAM -->
 
-async function joinExam(){
+  <section
+    id="examPage"
+    class="page hidden"
+  >
 
-  const name =
-    document.getElementById("studentName")
-      .value.trim();
+    <div class="card">
 
-  const code =
-    document.getElementById("joinCode")
-      .value.trim()
-      .toUpperCase();
+      <h2 id="studentExamTitle">
+        Qormaata
+      </h2>
 
-  if(!name){
-
-    toast("⚠️ Maqaa kee galchi.");
-
-    return;
-  }
-
-  if(!code){
-
-    toast("⚠️ Exam Code galchi.");
-
-    return;
-  }
-
-  try{
-
-    toast("⏳ Qormaata barbaadaa jira...");
-
-    const response =
-      await fetch(
-        API_BASE +
-        "/api/exams/code/" +
-        code
-      );
-
-    const data =
-      await response.json();
-
-    if(!response.ok){
-
-      throw new Error(
-        data.error || "Qormaata hin argamne."
-      );
-    }
-
-    currentExam = data.exam;
-    currentQuestions = data.questions || [];
-    currentStudent = name;
-
-    startStudentExam();
-
-  }catch(error){
-
-    toast("❌ " + error.message);
-
-  }
-}
-
-
-/* =========================
-   START STUDENT EXAM
-========================= */
-
-function startStudentExam(){
-
-  showPage("exam");
-
-  document.getElementById("examInfo").innerHTML = `
-
-    <div class="card" style="margin-bottom:15px">
-
-      <h2>${escapeHTML(currentExam.title)}</h2>
-
-      <p style="color:var(--gray);margin-top:6px">
-        👨‍🏫 ${escapeHTML(currentExam.teacher_name || "")}
-      </p>
-
-      <p style="color:var(--gray);margin-top:4px">
-        📚 ${escapeHTML(currentExam.subject || "")}
-      </p>
+      <p id="studentExamInfo"></p>
 
     </div>
-  `;
 
-  renderExamQuestions();
+    <div
+      id="timerBox"
+      class="timer"
+    >
+      ⏱️ Yeroo:
+      <span id="timer">--:--</span>
+    </div>
 
-  startTimer(
-    Number(currentExam.duration || 30) * 60
-  );
-}
+    <div id="studentQuestions"></div>
+
+    <button
+      class="btn btn-primary"
+      onclick="submitExam()"
+    >
+      📤 Qormaata Ergi
+    </button>
+
+  </section>
 
 
-/* =========================
-   RENDER EXAM
-========================= */
+  <!-- RESULT -->
 
-function renderExamQuestions(){
+  <section
+    id="resultPage"
+    class="page hidden"
+  >
 
-  const container =
-    document.getElementById("questionsContainer");
+    <div class="card result-card">
 
-  if(currentQuestions.length === 0){
+      <h2>🎉 Qormaata Xumurameera</h2>
 
-    container.innerHTML = `
+      <div class="score">
 
-      <div class="card empty">
+        <strong id="resultPercentage">
+          0%
+        </strong>
 
-        <div class="empty-icon">❓</div>
-
-        <h3>Gaaffiin hin jirre</h3>
-
-        <p>
-          Qormaata kana keessatti gaaffiin hin jiru.
-        </p>
+        <span>
+          Bu'aa
+        </span>
 
       </div>
-    `;
 
-    return;
+      <h3 id="resultScore">
+        0 / 0
+      </h3>
+
+      <p id="resultStudent"></p>
+
+      <button
+        class="btn btn-primary"
+        onclick="backAfterResult()"
+      >
+        🏠 Gara Jalqabaatti
+      </button>
+
+    </div>
+
+  </section>
+
+</main>
+
+
+<!-- SIDE MENU -->
+
+<div
+  id="sideMenu"
+  class="side-menu"
+>
+
+  <h2 style="color:#087443;">
+    Kaayyoo
+  </h2>
+
+  <p
+    id="menuTeacher"
+    style="
+      color:#718078;
+      margin-top:5px;
+    "
+  ></p>
+
+  <button
+    onclick="showPage('dashboardPage'); closeMenu()"
+  >
+    🏠 Dashboard
+  </button>
+
+  <button
+    onclick="showPage('createExamPage'); closeMenu()"
+  >
+    📝 Qormaata Uumi
+  </button>
+
+  <button
+    onclick="showPage('myExamsPage'); loadMyExams(); closeMenu()"
+  >
+    📚 Qormaata Koo
+  </button>
+
+  <button
+    onclick="showStudentJoin(); closeMenu()"
+  >
+    🎓 Qormaata Seeni
+  </button>
+
+  <button
+    onclick="checkHealth(); closeMenu()"
+  >
+    🟢 Server
+  </button>
+
+  <button
+    class="close-menu"
+    onclick="logout()"
+  >
+    🚪 Ba'i
+  </button>
+
+</div>
+
+
+<div id="toast"></div>
+
+
+<script>
+
+  const API_BASE = "";
+
+  let currentTeacher = null;
+  let currentExam = null;
+  let currentQuestions = [];
+  let examTimer = null;
+  let examSeconds = 0;
+
+
+  /* =========================
+     UTILITIES
+  ========================= */
+
+  function $(id) {
+    return document.getElementById(id);
   }
 
-  container.innerHTML =
-    currentQuestions.map((q,index)=>`
 
-      <div class="question">
+  function toast(message) {
 
-        <div class="question-number">
-          Gaaffii ${index+1}
-        </div>
+    const box = $("toast");
 
-        <div style="font-weight:bold;margin-bottom:10px">
-          ${escapeHTML(q.question)}
-        </div>
+    box.textContent = message;
+    box.style.display = "block";
 
-        ${optionHTML(q.id,"a",q.option_a)}
-        ${optionHTML(q.id,"b",q.option_b)}
-        ${optionHTML(q.id,"c",q.option_c)}
-        ${optionHTML(q.id,"d",q.option_d)}
-
-      </div>
-
-    `).join("");
-}
+    setTimeout(() => {
+      box.style.display = "none";
+    }, 3000);
+  }
 
 
-function optionHTML(id,value,text){
+  function showPage(pageId) {
 
-  if(!text) return "";
+    document
+      .querySelectorAll(".page")
+      .forEach(page => {
+        page.classList.add("hidden");
+      });
 
-  return `
+    $(pageId).classList.remove("hidden");
 
-    <label class="option">
-
-      <input
-        type="radio"
-        name="q_${id}"
-        value="${value}"
-      >
-
-      <span>
-        <b>${value.toUpperCase()}.</b>
-        ${escapeHTML(text)}
-      </span>
-
-    </label>
-  `;
-}
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth"
+    });
+  }
 
 
-/* =========================
-   TIMER
-========================= */
+  function openMenu() {
+    $("sideMenu").classList.add("open");
+  }
 
-function startTimer(seconds){
 
-  clearInterval(timerInterval);
+  function closeMenu() {
+    $("sideMenu").classList.remove("open");
+  }
 
-  remainingSeconds = seconds;
 
-  updateTimer();
+  /* =========================
+     AUTH TABS
+  ========================= */
 
-  timerInterval =
-    setInterval(()=>{
+  function showAuth(type) {
 
-      remainingSeconds--;
+    if (type === "login") {
 
-      updateTimer();
+      $("loginForm").classList.remove("hidden");
+      $("registerForm").classList.add("hidden");
 
-      if(remainingSeconds <= 0){
+      $("loginTab").classList.add("active");
+      $("registerTab").classList.remove("active");
 
-        clearInterval(timerInterval);
+    } else {
 
-        toast("⏰ Yeroon xumurameera.");
+      $("loginForm").classList.add("hidden");
+      $("registerForm").classList.remove("hidden");
 
-        submitExam();
+      $("loginTab").classList.remove("active");
+      $("registerTab").classList.add("active");
+    }
+  }
 
+
+  /* =========================
+     REGISTER
+  ========================= */
+
+  async function registerTeacher() {
+
+    const full_name =
+      $("registerName").value.trim();
+
+    const email =
+      $("registerEmail").value.trim();
+
+    const password =
+      $("registerPassword").value;
+
+    const password2 =
+      $("registerPassword2").value;
+
+
+    if (!full_name || !email || !password) {
+
+      toast("Maqaa, email fi password guuti.");
+      return;
+    }
+
+
+    if (password.length < 6) {
+
+      toast(
+        "Password yoo xiqqaate qubee 6 qabaachuu qaba."
+      );
+
+      return;
+    }
+
+
+    if (password !== password2) {
+
+      toast(
+        "Password lamaan wal hin fakkaatan."
+      );
+
+      return;
+    }
+
+
+    try {
+
+      const response =
+        await fetch(
+          API_BASE + "/api/auth/register",
+          {
+            method: "POST",
+
+            headers: {
+              "Content-Type":
+                "application/json"
+            },
+
+            body: JSON.stringify({
+              full_name,
+              email,
+              password
+            })
+          }
+        );
+
+
+      const data =
+        await response.json();
+
+
+      if (!response.ok) {
+
+        toast(
+          data.error ||
+          "Galmeen hin milkoofne."
+        );
+
+        return;
       }
 
-    },1000);
-}
 
-
-function updateTimer(){
-
-  const min =
-    Math.floor(remainingSeconds / 60);
-
-  const sec =
-    remainingSeconds % 60;
-
-  document.getElementById("timer")
-    .textContent =
-      String(min).padStart(2,"0") +
-      ":" +
-      String(sec).padStart(2,"0");
-}
-
-
-/* =========================
-   SUBMIT EXAM
-========================= */
-
-async function submitExam(){
-
-  if(!currentExam) return;
-
-  clearInterval(timerInterval);
-
-  const answers = {};
-
-  currentQuestions.forEach(q=>{
-
-    const selected =
-      document.querySelector(
-        `input[name="q_${q.id}"]:checked`
+      toast(
+        "✅ Galmeen milkaa'eera. Amma seeni."
       );
 
-    if(selected){
 
-      answers[q.id] =
-        selected.value;
-    }
+      $("loginEmail").value = email;
 
-  });
+      showAuth("login");
 
-  try{
+    } catch (error) {
 
-    const response =
-      await fetch(
-        API_BASE +
-        "/api/exams/" +
-        currentExam.id +
-        "/submit",
-        {
-          method:"POST",
-          headers:{
-            "Content-Type":"application/json"
-          },
-          body:JSON.stringify({
-            student_name:currentStudent,
-            answers
-          })
-        }
-      );
-
-    const data =
-      await response.json();
-
-    if(!response.ok){
-
-      throw new Error(
-        data.error || "Qormaata submit gochuu hin dandeenye."
+      toast(
+        "Server waliin wal qunnamtiin hin jiru."
       );
     }
-
-    showResult(data.result);
-
-  }catch(error){
-
-    toast("❌ " + error.message);
-
-  }
-}
-
-
-/* =========================
-   RESULT
-========================= */
-
-function showResult(result){
-
-  document.getElementById("resultStudent")
-    .textContent =
-      result.student_name;
-
-  document.getElementById("resultScore")
-    .textContent =
-      result.score;
-
-  document.getElementById("resultTotal")
-    .textContent =
-      result.total;
-
-  document.getElementById("resultPercentage")
-    .textContent =
-      result.percentage + "%";
-
-  showPage("result");
-}
-
-
-/* =========================
-   RESULTS TABLE
-========================= */
-
-async function loadResults(){
-
-  const examId =
-    document.getElementById("resultExamId")
-      .value.trim();
-
-  if(!examId){
-
-    toast("⚠️ Exam ID galchi.");
-
-    return;
   }
 
-  const container =
-    document.getElementById("resultsContainer");
 
-  container.innerHTML =
-    `<div class="loading">⏳ Bu'aa fe'aa jira...</div>`;
+  /* =========================
+     LOGIN
+  ========================= */
 
-  try{
+  async function loginTeacher() {
 
-    const response =
-      await fetch(
-        API_BASE +
-        "/api/exams/" +
-        examId +
-        "/results"
+    const email =
+      $("loginEmail").value.trim();
+
+    const password =
+      $("loginPassword").value;
+
+
+    if (!email || !password) {
+
+      toast(
+        "Email fi password guuti."
       );
 
-    const data =
-      await response.json();
-
-    if(!response.ok){
-
-      throw new Error(
-        data.error || "Bu'aa argachuu hin dandeenye."
-      );
+      return;
     }
 
-    const results =
-      data.results || [];
 
-    document.getElementById("statResults")
-      .textContent = results.length;
+    try {
 
-    if(results.length === 0){
+      const response =
+        await fetch(
+          API_BASE + "/api/auth/login",
+          {
+            method: "POST",
 
-      container.innerHTML = `
-        <div class="card empty">
-          <div class="empty-icon">📊</div>
-          <p>Bu'aan ammaaf hin jiru.</p>
+            headers: {
+              "Content-Type":
+                "application/json"
+            },
+
+            body: JSON.stringify({
+              email,
+              password
+            })
+          }
+        );
+
+
+      const data =
+        await response.json();
+
+
+      if (!response.ok) {
+
+        toast(
+          data.error ||
+          "Seenuun hin milkoofne."
+        );
+
+        return;
+      }
+
+
+      currentTeacher =
+        data.teacher;
+
+
+      localStorage.setItem(
+        "kaayyoo_teacher",
+        JSON.stringify(
+          currentTeacher
+        )
+      );
+
+
+      showDashboard();
+
+      toast(
+        "✅ Baga nagaan dhuftan!"
+      );
+
+    } catch (error) {
+
+      toast(
+        "Server waliin wal qunnamtiin hin jiru."
+      );
+    }
+  }
+
+
+  /* =========================
+     DASHBOARD
+  ========================= */
+
+  function showDashboard() {
+
+    if (!currentTeacher) {
+      showPage("authPage");
+      return;
+    }
+
+
+    $("mainHeader")
+      .classList
+      .remove("hidden");
+
+
+    $("teacherName").textContent =
+      currentTeacher.full_name;
+
+
+    $("menuTeacher").textContent =
+      currentTeacher.email;
+
+
+    showPage("dashboardPage");
+
+    loadDashboard();
+  }
+
+
+  async function loadDashboard() {
+
+    if (!currentTeacher) return;
+
+
+    try {
+
+      const response =
+        await fetch(
+          API_BASE +
+          "/api/teachers/" +
+          currentTeacher.id +
+          "/exams"
+        );
+
+
+      const data =
+        await response.json();
+
+
+      if (!response.ok) {
+
+        console.log(
+          data.error
+        );
+
+        return;
+      }
+
+
+      const exams =
+        data.exams || [];
+
+
+      $("examCount")
+        .textContent =
+        exams.length;
+
+
+      let questionTotal = 0;
+
+
+      for (const exam of exams) {
+
+        try {
+
+          const r =
+            await fetch(
+              API_BASE +
+              "/api/exams/code/" +
+              exam.exam_code
+            );
+
+          const d =
+            await r.json();
+
+          if (r.ok) {
+            questionTotal +=
+              (d.questions || []).length;
+          }
+
+        } catch (e) {}
+      }
+
+
+      $("questionCount")
+        .textContent =
+        questionTotal;
+
+
+      renderDashboardExams(exams);
+
+    } catch (error) {
+
+      toast(
+        "Qormaata fe'uun hin danda'amne."
+      );
+    }
+  }
+
+
+  function renderDashboardExams(exams) {
+
+    const box =
+      $("dashboardExams");
+
+
+    if (!exams.length) {
+
+      box.innerHTML = `
+        <div
+          style="
+            padding:20px;
+            text-align:center;
+            color:#718078;
+          "
+        >
+          Qormaanni ati uumte ammaaf hin jiru.
         </div>
       `;
 
       return;
     }
 
-    container.innerHTML = `
 
-      <div class="card" style="padding:0;overflow:auto">
+    box.innerHTML =
+      exams
+        .slice(0, 5)
+        .map(exam => `
+          <div class="exam-item">
 
-        <table>
+            <div class="exam-top">
 
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Barataa</th>
-              <th>Qabxii</th>
-              <th>%</th>
-            </tr>
-          </thead>
+              <div>
+                <strong>
+                  ${escapeHtml(exam.title)}
+                </strong>
 
-          <tbody>
+                <div
+                  style="
+                    color:#718078;
+                    font-size:12px;
+                    margin-top:5px;
+                  "
+                >
+                  ${escapeHtml(exam.subject || "")}
+                  ${exam.grade
+                    ? " • " + escapeHtml(exam.grade)
+                    : ""}
+                </div>
+              </div>
 
-            ${
-              results.map((r,i)=>`
+            </div>
 
-                <tr>
+            <span class="exam-code">
+              ${escapeHtml(exam.exam_code)}
+            </span>
 
-                  <td>${i+1}</td>
-
-                  <td>
-                    ${escapeHTML(r.student_name)}
-                  </td>
-
-                  <td>
-                    ${r.score}/${r.total}
-                  </td>
-
-                  <td>
-                    <b>${r.percentage}%</b>
-                  </td>
-
-                </tr>
-
-              `).join("")
-            }
-
-          </tbody>
-
-        </table>
-
-      </div>
-    `;
-
-  }catch(error){
-
-    container.innerHTML = `
-      <div class="card">
-        ❌ ${escapeHTML(error.message)}
-      </div>
-    `;
-
+          </div>
+        `)
+        .join("");
   }
-}
 
 
-/* =========================
-   SHARE
-========================= */
+  /* =========================
+     CREATE EXAM
+  ========================= */
 
-async function shareExam(code){
+  async function createExam() {
 
-  const link =
-    window.location.origin +
-    "/?exam=" +
-    encodeURIComponent(code);
+    if (!currentTeacher) {
 
-  if(navigator.share){
+      toast("Dura seeni.");
 
-    try{
-
-      await navigator.share({
-        title:"Kaayyoo Qormaata",
-        text:"Qormaata Kaayyoo kana seeni: " + code,
-        url:link
-      });
-
-    }catch(error){}
-
-  }else{
-
-    copyText(link);
-
-  }
-}
-
-
-/* =========================
-   COPY
-========================= */
-
-async function copyText(text){
-
-  try{
-
-    await navigator.clipboard.writeText(text);
-
-    toast("✅ Copy godhameera.");
-
-  }catch(error){
-
-    toast("📋 " + text);
-
-  }
-}
-
-
-/* =========================
-   START TEACHER EXAM
-========================= */
-
-function startTeacherExam(){
-
-  if(!currentExam) return;
-
-  currentStudent = "Preview";
-
-  startStudentExam();
-}
-
-
-/* =========================
-   HEALTH
-========================= */
-
-async function checkHealth(){
-
-  try{
-
-    const response =
-      await fetch(API_BASE + "/api/health");
-
-    const data =
-      await response.json();
-
-    if(data.ok){
-
-      toast("🟢 Server fi Supabase sirriitti hojjetaa jiru.");
-
-    }else{
-
-      toast("🔴 Database rakkoo qaba.");
-
+      return;
     }
 
-  }catch(error){
 
-    toast("🔴 Server hin argamne.");
+    const title =
+      $("examTitle").value.trim();
 
+    const subject =
+      $("examSubject").value.trim();
+
+    const grade =
+      $("examGrade").value.trim();
+
+    const duration =
+      Number(
+        $("examDuration").value
+      ) || 30;
+
+
+    if (!title) {
+
+      toast(
+        "Maqaa qormaataa guuti."
+      );
+
+      return;
+    }
+
+
+    try {
+
+      const response =
+        await fetch(
+          API_BASE + "/api/exams",
+          {
+            method: "POST",
+
+            headers: {
+              "Content-Type":
+                "application/json"
+            },
+
+            body: JSON.stringify({
+
+              teacher_id:
+                currentTeacher.id,
+
+              teacher_name:
+                currentTeacher.full_name,
+
+              title,
+              subject,
+              grade,
+              duration
+
+            })
+          }
+        );
+
+
+      const data =
+        await response.json();
+
+
+      if (!response.ok) {
+
+        toast(
+          data.error ||
+          "Qormaata uumuu hin dandeenye."
+        );
+
+        return;
+      }
+
+
+      currentExam =
+        data.exam;
+
+
+      $("newExamCode")
+        .textContent =
+        currentExam.exam_code;
+
+
+      $("createdExamBox")
+        .classList
+        .remove("hidden");
+
+
+      toast(
+        "✅ Qormaanni uumameera."
+      );
+
+
+      loadDashboard();
+
+    } catch (error) {
+
+      toast(
+        "Server waliin wal qunnamtiin hin jiru."
+      );
+    }
   }
-}
 
 
-/* =========================
-   PWA INSTALL
-========================= */
+  /* =========================
+     COPY CODE
+  ========================= */
 
-let deferredPrompt = null;
+  async function copyExamCode() {
 
-window.addEventListener(
-  "beforeinstallprompt",
-  event => {
+    if (!currentExam) return;
 
-    event.preventDefault();
+    try {
 
-    deferredPrompt = event;
+      await navigator.clipboard.writeText(
+        currentExam.exam_code
+      );
 
+      toast(
+        "📋 Exam Code copy ta'eera."
+      );
+
+    } catch (error) {
+
+      toast(
+        "Copy gochuun hin danda'amne."
+      );
+    }
   }
-);
 
 
-async function installApp(){
+  /* =========================
+     QUESTIONS
+  ========================= */
 
-  if(!deferredPrompt){
+  function openQuestionPage() {
+
+    if (!currentExam) {
+
+      toast(
+        "Dura qormaata uumi."
+      );
+
+      return;
+    }
+
+
+    $("questionExamTitle")
+      .textContent =
+      currentExam.title +
+      " • Code: " +
+      currentExam.exam_code;
+
+
+    showPage("questionsPage");
+
+    loadQuestions();
+  }
+
+
+  async function saveQuestion() {
+
+    if (!currentExam) {
+
+      toast("Qormaata hin filatamne.");
+
+      return;
+    }
+
+
+    const question =
+      $("questionText")
+        .value
+        .trim();
+
+    const option_a =
+      $("optionA")
+        .value
+        .trim();
+
+    const option_b =
+      $("optionB")
+        .value
+        .trim();
+
+    const option_c =
+      $("optionC")
+        .value
+        .trim();
+
+    const option_d =
+      $("optionD")
+        .value
+        .trim();
+
+    const correct_answer =
+      $("correctAnswer")
+        .value;
+
+    const points =
+      Number(
+        $("questionPoints").value
+      ) || 1;
+
+
+    if (
+      !question ||
+      !option_a ||
+      !option_b ||
+      !option_c ||
+      !option_d ||
+      !correct_answer
+    ) {
+
+      toast(
+        "Gaaffii fi deebiiwwan guutuu guuti."
+      );
+
+      return;
+    }
+
+
+    try {
+
+      const response =
+        await fetch(
+          API_BASE +
+          "/api/exams/" +
+          currentExam.id +
+          "/questions",
+          {
+            method: "POST",
+
+            headers: {
+              "Content-Type":
+                "application/json"
+            },
+
+            body: JSON.stringify({
+
+              question,
+
+              type: "multiple",
+
+              option_a,
+              option_b,
+              option_c,
+              option_d,
+
+              correct_answer,
+
+              points
+
+            })
+          }
+        );
+
+
+      const data =
+        await response.json();
+
+
+      if (!response.ok) {
+
+        toast(
+          data.error ||
+          "Gaaffii olkaa'uu hin dandeenye."
+        );
+
+        return;
+      }
+
+
+      $("questionText").value = "";
+      $("optionA").value = "";
+      $("optionB").value = "";
+      $("optionC").value = "";
+      $("optionD").value = "";
+      $("correctAnswer").value = "";
+      $("questionPoints").value = 1;
+
+
+      toast(
+        "✅ Gaaffiin olkaa'ameera."
+      );
+
+
+      loadQuestions();
+
+    } catch (error) {
+
+      toast(
+        "Server waliin wal qunnamtiin hin jiru."
+      );
+    }
+  }
+
+
+  async function loadQuestions() {
+
+    if (!currentExam) return;
+
+
+    try {
+
+      const response =
+        await fetch(
+          API_BASE +
+          "/api/exams/code/" +
+          currentExam.exam_code
+        );
+
+
+      const data =
+        await response.json();
+
+
+      if (!response.ok) return;
+
+
+      currentQuestions =
+        data.questions || [];
+
+
+      const box =
+        $("questionList");
+
+
+      if (!currentQuestions.length) {
+
+        box.innerHTML =
+          "<p>Gaaffiin ammaaf hin jiru.</p>";
+
+        return;
+      }
+
+
+      box.innerHTML =
+        currentQuestions
+          .map((q, index) => `
+
+            <div class="question-box">
+
+              <div class="question-number">
+                Gaaffii ${index + 1}
+              </div>
+
+              <strong>
+                ${escapeHtml(q.question)}
+              </strong>
+
+              <div
+                style="
+                  margin-top:10px;
+                  color:#718078;
+                  font-size:13px;
+                "
+              >
+                A. ${escapeHtml(q.option_a)}
+                <br>
+                B. ${escapeHtml(q.option_b)}
+                <br>
+                C. ${escapeHtml(q.option_c)}
+                <br>
+                D. ${escapeHtml(q.option_d)}
+              </div>
+
+              <div
+                style="
+                  margin-top:8px;
+                  color:#087443;
+                  font-weight:bold;
+                "
+              >
+                Deebii sirrii:
+                ${escapeHtml(
+                  String(q.correct_answer)
+                    .toUpperCase()
+                )}
+              </div>
+
+            </div>
+
+          `)
+          .join("");
+
+    } catch (error) {}
+  }
+
+
+  function finishQuestions() {
+
+    loadDashboard();
+
+    showPage("dashboardPage");
 
     toast(
-      "📱 Install option browser kee keessatti yoo mul'ate fayyadami."
+      "✅ Qormaata kee qopheessiteetta."
     );
-
-    return;
   }
 
-  deferredPrompt.prompt();
 
-  const choice =
-    await deferredPrompt.userChoice;
+  /* =========================
+     MY EXAMS
+  ========================= */
 
-  deferredPrompt = null;
+  async function loadMyExams() {
 
-}
+    if (!currentTeacher) return;
 
 
-/* =========================
-   LOCAL DATA
-========================= */
+    const box =
+      $("myExamsList");
 
-function clearLocalData(){
 
-  if(
-    confirm(
-      "Data bilbila kana irratti olkaa'ame haquu barbaaddaa?"
+    box.innerHTML =
+      "<p>Loading...</p>";
+
+
+    try {
+
+      const response =
+        await fetch(
+          API_BASE +
+          "/api/teachers/" +
+          currentTeacher.id +
+          "/exams"
+        );
+
+
+      const data =
+        await response.json();
+
+
+      if (!response.ok) {
+
+        box.innerHTML =
+          `<p>${escapeHtml(
+            data.error || "Error"
+          )}</p>`;
+
+        return;
+      }
+
+
+      const exams =
+        data.exams || [];
+
+
+      if (!exams.length) {
+
+        box.innerHTML =
+          "<p>Qormaata hin uumamne.</p>";
+
+        return;
+      }
+
+
+      box.innerHTML =
+        exams
+          .map(exam => `
+
+            <div class="exam-item">
+
+              <div class="exam-top">
+
+                <div>
+
+                  <strong>
+                    ${escapeHtml(exam.title)}
+                  </strong>
+
+                  <div
+                    style="
+                      color:#718078;
+                      font-size:12px;
+                      margin-top:5px;
+                    "
+                  >
+                    ${escapeHtml(
+                      exam.subject || ""
+                    )}
+
+                    ${
+                      exam.grade
+                        ? " • " +
+                          escapeHtml(exam.grade)
+                        : ""
+                    }
+
+                    • ${exam.duration} daqiiqaa
+
+                  </div>
+
+                </div>
+
+              </div>
+
+              <span class="exam-code">
+                ${escapeHtml(exam.exam_code)}
+              </span>
+
+              <div class="exam-actions">
+
+                <button
+                  class="btn btn-primary btn-small"
+                  onclick="manageExam('${exam.id}', '${exam.exam_code}')"
+                >
+                  ❓ Gaaffii
+                </button>
+
+                <button
+                  class="btn btn-secondary btn-small"
+                  onclick="viewResults('${exam.id}', '${exam.title.replace(/'/g, "\\'")}')"
+                >
+                  📊 Bu'aa
+                </button>
+
+                <button
+                  class="btn btn-secondary btn-small"
+                  onclick="copyText('${exam.exam_code}')"
+                >
+                  📋 Code
+                </button>
+
+              </div>
+
+            </div>
+
+          `)
+          .join("");
+
+    } catch (error) {
+
+      box.innerHTML =
+        "<p>Server error.</p>";
+    }
+  }
+
+
+  function manageExam(id, code) {
+
+    currentExam = {
+      id,
+      exam_code: code,
+      title: "Qormaata"
+    };
+
+
+    fetch(
+      API_BASE +
+      "/api/exams/code/" +
+      code
     )
-  ){
+      .then(r => r.json())
+      .then(data => {
 
-    localStorage.removeItem("kaayyoo_exams");
+        if (data.exam) {
+          currentExam = data.exam;
+        }
 
-    myExams = [];
+        openQuestionPage();
 
-    document.getElementById("statExams")
-      .textContent = "0";
+      });
+  }
 
-    toast("🗑️ Data bilbila irraa haqame.");
+
+  /* =========================
+     STUDENT JOIN
+  ========================= */
+
+  function showStudentJoin() {
+
+    showPage("studentJoinPage");
 
   }
-}
 
 
-/* =========================
-   URL EXAM CODE
-========================= */
+  function goBackFromStudent() {
 
-function checkExamFromURL(){
-
-  const params =
-    new URLSearchParams(
-      window.location.search
-    );
-
-  const code =
-    params.get("exam");
-
-  if(code){
-
-    document.getElementById("joinCode")
-      .value = code.toUpperCase();
-
-    showPage("join");
-
+    if (currentTeacher) {
+      showDashboard();
+    } else {
+      showPage("authPage");
+    }
   }
-}
 
 
-/* =========================
-   ESCAPE HTML
-========================= */
+  async function joinExam() {
 
-function escapeHTML(value){
+    const studentName =
+      $("studentName")
+        .value
+        .trim();
 
-  return String(value ?? "")
-    .replaceAll("&","&amp;")
-    .replaceAll("<","&lt;")
-    .replaceAll(">","&gt;")
-    .replaceAll('"',"&quot;")
-    .replaceAll("'","&#039;");
-
-}
+    const code =
+      $("joinCode")
+        .value
+        .trim()
+        .toUpperCase();
 
 
-/* =========================
-   INIT
-========================= */
+    if (!studentName || !code) {
 
-document.addEventListener(
-  "DOMContentLoaded",
-  async ()=>{
+      toast(
+        "Maqaa fi Exam Code guuti."
+      );
 
-    console.log("✅ Kaayyoo 2.0 loaded.");
-
-    document.getElementById("statExams")
-      .textContent =
-      myExams.length;
-
-    checkExamFromURL();
-
-    if(currentExam){
-
-      await loadExamQuestions();
-
+      return;
     }
 
+
+    try {
+
+      const response =
+        await fetch(
+          API_BASE +
+          "/api/exams/code/" +
+          encodeURIComponent(code)
+        );
+
+
+      const data =
+        await response.json();
+
+
+      if (!response.ok) {
+
+        toast(
+          data.error ||
+          "Qormaata hin argamne."
+        );
+
+        return;
+      }
+
+
+      if (
+        !data.questions ||
+        !data.questions.length
+      ) {
+
+        toast(
+          "Qormaanni kun gaaffii hin qabu."
+        );
+
+        return;
+      }
+
+
+      currentExam =
+        data.exam;
+
+      currentQuestions =
+        data.questions;
+
+
+      localStorage.setItem(
+        "kaayyoo_student",
+        studentName
+      );
+
+
+      renderStudentExam();
+
+    } catch (error) {
+
+      toast(
+        "Server waliin wal qunnamtiin hin jiru."
+      );
+    }
   }
-);
+
+
+  /* =========================
+     STUDENT EXAM
+  ========================= */
+
+  function renderStudentExam() {
+
+    $("studentExamTitle")
+      .textContent =
+      currentExam.title;
+
+
+    $("studentExamInfo")
+      .textContent =
+      `${currentExam.subject || ""} • ${
+        currentExam.grade || ""
+      } • Barsiisaa: ${
+        currentExam.teacher_name || ""
+      }`;
+
+
+    const box =
+      $("studentQuestions");
+
+
+    box.innerHTML =
+      currentQuestions
+        .map((q, index) => `
+
+          <div class="card">
+
+            <div class="question-number">
+              Gaaffii ${index + 1}
+            </div>
+
+            <h3>
+              ${escapeHtml(q.question)}
+            </h3>
+
+            <label class="option">
+
+              <input
+                type="radio"
+                name="q_${q.id}"
+                value="a"
+              >
+
+              <span>
+                A. ${escapeHtml(q.option_a)}
+              </span>
+
+            </label>
+
+            <label class="option">
+
+              <input
+                type="radio"
+                name="q_${q.id}"
+                value="b"
+              >
+
+              <span>
+                B. ${escapeHtml(q.option_b)}
+              </span>
+
+            </label>
+
+            <label class="option">
+
+              <input
+                type="radio"
+                name="q_${q.id}"
+                value="c"
+              >
+
+              <span>
+                C. ${escapeHtml(q.option_c)}
+              </span>
+
+            </label>
+
+            <label class="option">
+
+              <input
+                type="radio"
+                name="q_${q.id}"
+                value="d"
+              >
+
+              <span>
+                D. ${escapeHtml(q.option_d)}
+              </span>
+
+            </label>
+
+          </div>
+
+        `)
+        .join("");
+
+
+    showPage("examPage");
+
+
+    startTimer(
+      Number(currentExam.duration) || 30
+    );
+  }
+
+
+  /* =========================
+     TIMER
+  ========================= */
+
+  function startTimer(minutes) {
+
+    clearInterval(examTimer);
+
+
+    examSeconds =
+      minutes * 60;
+
+
+    updateTimer();
+
+
+    examTimer =
+      setInterval(() => {
+
+        examSeconds--;
+
+        updateTimer();
+
+
+        if (examSeconds <= 0) {
+
+          clearInterval(examTimer);
+
+          toast(
+            "⏰ Yeroon qormaataa xumurameera."
+          );
+
+          submitExam(true);
+        }
+
+      }, 1000);
+  }
+
+
+  function updateTimer() {
+
+    const minutes =
+      Math.floor(
+        examSeconds / 60
+      );
+
+    const seconds =
+      examSeconds % 60;
+
+
+    $("timer")
+      .textContent =
+      String(minutes).padStart(2, "0") +
+      ":" +
+      String(seconds).padStart(2, "0");
+  }
+
+
+  /* =========================
+     SUBMIT
+  ========================= */
+
+  async function submitExam(auto = false) {
+
+    if (!currentExam) return;
+
+
+    if (!auto) {
+
+      const confirmed =
+        confirm(
+          "Qormaata erguu barbaaddaa?"
+        );
+
+      if (!confirmed) return;
+    }
+
+
+    clearInterval(examTimer);
+
+
+    const studentName =
+      localStorage.getItem(
+        "kaayyoo_student"
+      ) || "Barataa";
+
+
+    const answers = {};
+
+
+    currentQuestions.forEach(q => {
+
+      const selected =
+        document.querySelector(
+          `input[name="q_${q.id}"]:checked`
+        );
+
+
+      if (selected) {
+        answers[q.id] =
+          selected.value;
+      }
+
+    });
+
+
+    try {
+
+      const response =
+        await fetch(
+          API_BASE +
+          "/api/exams/" +
+          currentExam.id +
+          "/submit",
+          {
+            method: "POST",
+
+            headers: {
+              "Content-Type":
+                "application/json"
+            },
+
+            body: JSON.stringify({
+              student_name:
+                studentName,
+
+              answers
+            })
+          }
+        );
+
+
+      const data =
+        await response.json();
+
+
+      if (!response.ok) {
+
+        toast(
+          data.error ||
+          "Qormaata erguun hin milkoofne."
+        );
+
+        return;
+      }
+
+
+      $("resultPercentage")
+        .textContent =
+        data.result.percentage +
+        "%";
+
+
+      $("resultScore")
+        .textContent =
+        data.result.score +
+        " / " +
+        data.result.total;
+
+
+      $("resultStudent")
+        .textContent =
+        "Barataa: " +
+        data.result.student_name;
+
+
+      showPage("resultPage");
+
+    } catch (error) {
+
+      toast(
+        "Server waliin wal qunnamtiin hin jiru."
+      );
+    }
+  }
+
+
+  function backAfterResult() {
+
+    if (currentTeacher) {
+      showDashboard();
+    } else {
+      showStudentJoin();
+    }
+  }
+
+
+  /* =========================
+     RESULTS
+  ========================= */
+
+  async function viewResults(
+    examId,
+    examTitle
+  ) {
+
+    try {
+
+      const response =
+        await fetch(
+          API_BASE +
+          "/api/exams/" +
+          examId +
+          "/results"
+        );
+
+
+      const data =
+        await response.json();
+
+
+      if (!response.ok) {
+
+        toast(
+          data.error ||
+          "Bu'aa argachuu hin dandeenye."
+        );
+
+        return;
+      }
+
+
+      const results =
+        data.results || [];
+
+
+      let message =
+        "📊 " +
+        examTitle +
+        "\n\n";
+
+
+      if (!results.length) {
+
+        message +=
+          "Ammaaf barataan qormaata hin ergine.";
+
+      } else {
+
+        results.forEach(
+          (r, index) => {
+
+            message +=
+              `${index + 1}. ` +
+              r.student_name +
+              " — " +
+              r.score +
+              "/" +
+              r.total +
+              " (" +
+              r.percentage +
+              "%)\n";
+
+          }
+        );
+      }
+
+
+      alert(message);
+
+    } catch (error) {
+
+      toast(
+        "Bu'aa fe'uun hin danda'amne."
+      );
+    }
+  }
+
+
+  /* =========================
+     SERVER HEALTH
+  ========================= */
+
+  async function checkHealth() {
+
+    try {
+
+      const response =
+        await fetch(
+          API_BASE +
+          "/api/health"
+        );
+
+
+      const data =
+        await response.json();
+
+
+      if (data.ok) {
+
+        toast(
+          "🟢 Server fi Supabase sirriitti hojjetaa jiru."
+        );
+
+      } else {
+
+        toast(
+          "🔴 Database rakkoo qaba."
+        );
+      }
+
+    } catch (error) {
+
+      toast(
+        "🔴 Server hin argamne."
+      );
+    }
+  }
+
+
+  /* =========================
+     LOGOUT
+  ========================= */
+
+  function logout() {
+
+    const yes =
+      confirm(
+        "Ba'uu barbaaddaa?"
+      );
+
+
+    if (!yes) return;
+
+
+    currentTeacher = null;
+
+    currentExam = null;
+
+    localStorage.removeItem(
+      "kaayyoo_teacher"
+    );
+
+
+    $("mainHeader")
+      .classList
+      .add("hidden");
+
+
+    closeMenu();
+
+    showPage("authPage");
+
+    toast(
+      "Baateetta."
+    );
+  }
+
+
+  /* =========================
+     COPY TEXT
+  ========================= */
+
+  async function copyText(text) {
+
+    try {
+
+      await navigator.clipboard.writeText(
+        text
+      );
+
+      toast(
+        "📋 Copy ta'eera."
+      );
+
+    } catch (error) {
+
+      toast(
+        "Copy gochuun hin danda'amne."
+      );
+    }
+  }
+
+
+  /* =========================
+     SECURITY DISPLAY
+  ========================= */
+
+  function escapeHtml(value) {
+
+    return String(value ?? "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+  }
+
+
+  /* =========================
+     START APP
+  ========================= */
+
+  document.addEventListener(
+    "DOMContentLoaded",
+    () => {
+
+      const saved =
+        localStorage.getItem(
+          "kaayyoo_teacher"
+        );
+
+
+      if (saved) {
+
+        try {
+
+          currentTeacher =
+            JSON.parse(saved);
+
+          showDashboard();
+
+        } catch (error) {
+
+          localStorage.removeItem(
+            "kaayyoo_teacher"
+          );
+
+          showPage("authPage");
+        }
+
+      } else {
+
+        showPage("authPage");
+      }
+
+
+      /*
+        URL:
+        ?exam=ABCD1234
+      */
+
+      const params =
+        new URLSearchParams(
+          window.location.search
+        );
+
+      const examCode =
+        params.get("exam");
+
+
+      if (examCode) {
+
+        showStudentJoin();
+
+        $("joinCode")
+          .value =
+          examCode.toUpperCase();
+      }
+
+    }
+  );
 
 </script>
 
