@@ -1,6 +1,6 @@
 {
   "name": "kaayyoo",
-  "version": "1.0.0",
+  "version": "3.0.0",
   "description": "Kaayyoo - Sirna Qormaataa Barattootaa",
   "main": "server.js",
   "scripts": {
@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.57.4",
+    "bcryptjs": "^2.4.3",
     "express": "^4.21.2"
   }
 }
