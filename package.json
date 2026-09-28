@@ -1,14 +1,13 @@
 {
-  "name": "kaayyoo",
-  "version": "3.0.0",
-  "description": "Kaayyoo - Sirna Qormaataa Barattootaa",
+  "name": "hidaayatul-bayaan",
+  "version": "1.0.0",
+  "description": "Hidaayatul-Bayaan - Sirna Qormaataa Barattootaa",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.57.4",
-    "bcryptjs": "^2.4.3",
     "express": "^4.21.2"
   }
 }
