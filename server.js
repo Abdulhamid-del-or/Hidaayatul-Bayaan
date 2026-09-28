@@ -70,7 +70,7 @@ app.get("/api/health", async (req, res) => {
 
     res.json({
       ok: true,
-      app: "Kaayyoo",
+      app: "Hidaayatul-Bayaan",
       database: "Supabase connected"
     });
   } catch (error) {
@@ -401,5 +401,7 @@ app.delete("/api/questions/:id", async (req, res) => {
 });
 
 app.listen(PORT, "0.0.0.0", () => {
-  console.log(`✅ Kaayyoo server running on port ${PORT}`);
+  console.log(
+    `✅ Hidaayatul-Bayaan server running on port ${PORT}`
+  );
 });
