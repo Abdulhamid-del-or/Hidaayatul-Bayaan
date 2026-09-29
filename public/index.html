@@ -3,10 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
   <meta name="theme-color" content="#087443">
   <meta name="description" content="Hidaayatul-Bayaan - Sirna Qormaataa Barattootaa">
-
   <link rel="manifest" href="/manifest.json">
 
   <title>Hidaayatul-Bayaan</title>
@@ -27,13 +25,12 @@
     header {
       background: #087443;
       color: white;
-      padding: 18px 15px;
+      padding: 20px 15px;
       text-align: center;
-      box-shadow: 0 2px 8px rgba(0,0,0,.15);
     }
 
     header h1 {
-      font-size: 23px;
+      font-size: 24px;
       margin-bottom: 5px;
     }
 
@@ -43,10 +40,9 @@
     }
 
     main {
-      width: 100%;
       max-width: 700px;
       margin: auto;
-      padding: 18px 14px 40px;
+      padding: 18px 12px 50px;
     }
 
     .hidden {
@@ -54,10 +50,10 @@
     }
 
     .page {
-      animation: fadeIn .2s ease;
+      animation: showPage .2s ease;
     }
 
-    @keyframes fadeIn {
+    @keyframes showPage {
       from {
         opacity: 0;
         transform: translateY(5px);
@@ -69,52 +65,54 @@
       }
     }
 
-    .home-title {
+    /* HOME */
+
+    .welcome {
       text-align: center;
-      margin: 15px 0 20px;
+      padding: 10px 0 20px;
     }
 
-    .home-title h2 {
+    .welcome h2 {
       color: #087443;
       font-size: 22px;
     }
 
-    .home-title p {
-      color: #666;
-      margin-top: 6px;
+    .welcome p {
+      color: #777;
+      margin-top: 7px;
       font-size: 14px;
     }
 
-    .menu-grid {
+    .menu {
       display: grid;
       gap: 14px;
     }
 
     .menu-card {
       background: white;
-      border-radius: 15px;
-      padding: 22px 18px;
-      border: 1px solid #e0e0e0;
-      box-shadow: 0 3px 10px rgba(0,0,0,.07);
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 3px 12px rgba(0,0,0,.08);
+      border: 1px solid #e3e3e3;
       cursor: pointer;
-      transition: .2s;
-      text-align: left;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      transition: .15s;
     }
 
-    .menu-card:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 5px 14px rgba(0,0,0,.11);
+    .menu-card:active {
+      transform: scale(.98);
     }
 
     .menu-icon {
-      font-size: 32px;
+      font-size: 34px;
       margin-bottom: 8px;
     }
 
     .menu-card h3 {
       color: #087443;
       font-size: 18px;
-      margin-bottom: 5px;
+      margin-bottom: 6px;
     }
 
     .menu-card p {
@@ -123,49 +121,52 @@
       line-height: 1.5;
     }
 
+    /* PANEL */
+
     .panel {
       background: white;
       border-radius: 16px;
       padding: 18px;
       box-shadow: 0 3px 12px rgba(0,0,0,.08);
-      margin-top: 10px;
+      margin-bottom: 15px;
     }
 
-    .back-btn {
-      border: none;
+    .back {
+      border: 0;
       background: transparent;
       color: #087443;
-      font-weight: bold;
       font-size: 15px;
+      font-weight: bold;
       cursor: pointer;
-      margin-bottom: 15px;
-      padding: 5px 0;
+      padding: 5px 0 15px;
     }
 
-    .panel-title {
+    .title {
       color: #087443;
       font-size: 21px;
       margin-bottom: 18px;
     }
 
-    .form-group {
+    /* FORM */
+
+    .field {
       margin-bottom: 14px;
     }
 
-    label {
+    .field label {
       display: block;
+      font-size: 14px;
       font-weight: bold;
       margin-bottom: 6px;
-      font-size: 14px;
     }
 
     input,
     select,
     textarea {
       width: 100%;
-      padding: 12px;
       border: 1px solid #ccc;
       border-radius: 9px;
+      padding: 12px;
       font-size: 15px;
       outline: none;
       background: white;
@@ -175,7 +176,6 @@
     select:focus,
     textarea:focus {
       border-color: #087443;
-      box-shadow: 0 0 0 2px rgba(8,116,67,.08);
     }
 
     textarea {
@@ -183,11 +183,15 @@
       resize: vertical;
     }
 
+    button {
+      font-family: inherit;
+    }
+
     .btn {
       width: 100%;
-      border: none;
-      border-radius: 10px;
       padding: 13px;
+      border: 0;
+      border-radius: 10px;
       font-size: 15px;
       font-weight: bold;
       cursor: pointer;
@@ -200,7 +204,7 @@
     }
 
     .btn-secondary {
-      background: #e9f3ee;
+      background: #e9f5ef;
       color: #087443;
     }
 
@@ -209,22 +213,42 @@
       color: white;
     }
 
-    .info-box {
-      background: #eef8f2;
+    .info {
+      background: #edf8f1;
       border-left: 4px solid #087443;
       padding: 12px;
       border-radius: 8px;
       margin-bottom: 15px;
+      font-size: 14px;
       line-height: 1.6;
+    }
+
+    .error {
+      background: #fff0f0;
+      color: #b71c1c;
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 12px;
       font-size: 14px;
     }
 
+    .success {
+      background: #eaf8ef;
+      color: #176b45;
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 12px;
+      font-size: 14px;
+    }
+
+    /* EXAM */
+
     .exam-info {
-      background: #f7f7f7;
+      background: #f6f6f6;
       border-radius: 10px;
       padding: 13px;
+      line-height: 1.8;
       margin-bottom: 15px;
-      line-height: 1.7;
       font-size: 14px;
     }
 
@@ -236,62 +260,63 @@
       background: #087443;
       color: white;
       border-radius: 12px;
-      padding: 17px;
       text-align: center;
+      padding: 16px;
       margin: 15px 0;
     }
 
     .code-box small {
       display: block;
-      opacity: .85;
-      margin-bottom: 5px;
+      margin-bottom: 6px;
+      opacity: .9;
     }
 
-    .exam-code {
-      font-size: 26px;
+    .code {
+      font-size: 27px;
       font-weight: bold;
       letter-spacing: 3px;
     }
 
-    .link-box {
-      background: #f1f1f1;
-      padding: 10px;
+    .link {
+      background: #f3f3f3;
       border-radius: 8px;
-      word-break: break-all;
+      padding: 10px;
       font-size: 13px;
-      margin-top: 8px;
+      word-break: break-all;
+      margin-bottom: 8px;
     }
 
-    .question-card {
-      background: #fafafa;
+    /* QUESTIONS */
+
+    .question {
       border: 1px solid #ddd;
       border-radius: 12px;
-      padding: 15px;
-      margin-bottom: 14px;
+      padding: 14px;
+      margin-bottom: 12px;
+      background: #fafafa;
     }
 
     .question-number {
       color: #087443;
       font-weight: bold;
-      margin-bottom: 9px;
+      margin-bottom: 7px;
     }
 
     .question-text {
-      font-size: 16px;
       font-weight: bold;
       line-height: 1.6;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
     }
 
     .option {
       display: flex;
-      gap: 9px;
       align-items: flex-start;
-      padding: 9px;
-      margin-bottom: 7px;
+      gap: 8px;
       background: white;
       border: 1px solid #ddd;
       border-radius: 8px;
+      padding: 10px;
+      margin-top: 7px;
       cursor: pointer;
     }
 
@@ -300,30 +325,17 @@
       margin-top: 3px;
     }
 
-    .question-actions {
-      display: flex;
-      gap: 8px;
-      margin-top: 10px;
-    }
+    /* RESULTS */
 
-    .question-actions button {
-      flex: 1;
-      border: none;
-      padding: 9px;
-      border-radius: 8px;
-      cursor: pointer;
+    .score {
+      text-align: center;
+      font-size: 48px;
       font-weight: bold;
+      color: #087443;
+      margin: 15px 0;
     }
 
-    .question-list-item {
-      background: #f8f8f8;
-      padding: 12px;
-      border-radius: 9px;
-      margin-bottom: 8px;
-      border-left: 4px solid #087443;
-    }
-
-    .result-card {
+    .result {
       background: white;
       border: 1px solid #ddd;
       border-radius: 12px;
@@ -331,68 +343,17 @@
       margin-bottom: 12px;
     }
 
-    .result-number {
-      text-align: center;
-      font-size: 45px;
-      font-weight: bold;
-      color: #087443;
-      margin: 12px 0;
-    }
-
-    .success {
-      background: #e9f7ef;
-      color: #176b45;
-      border-radius: 10px;
-      padding: 13px;
-      margin: 10px 0;
-      text-align: center;
-    }
-
-    .danger {
-      background: #fff0f0;
-      color: #b71c1c;
-      border-radius: 10px;
-      padding: 13px;
-      margin: 10px 0;
-    }
-
-    .loading {
-      text-align: center;
-      padding: 25px;
+    .small {
       color: #777;
+      font-size: 12px;
     }
 
     .empty {
       text-align: center;
-      padding: 20px;
       color: #777;
       background: #fafafa;
+      padding: 20px;
       border-radius: 10px;
-    }
-
-    .small {
-      font-size: 12px;
-      color: #777;
-    }
-
-    .two-buttons {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 9px;
-    }
-
-    @media (max-width: 480px) {
-      main {
-        padding: 12px 10px 30px;
-      }
-
-      .panel {
-        padding: 14px;
-      }
-
-      .two-buttons {
-        grid-template-columns: 1fr;
-      }
     }
   </style>
 </head>
@@ -406,60 +367,91 @@
 
 <main>
 
-  <!-- =========================
-       HOME
-  ========================== -->
+  <!-- ================= HOME ================= -->
+
   <section id="homePage" class="page">
 
-    <div class="home-title">
-      <h2>Hundaaf Baga Nagaan Dhuftan</h2>
+    <div class="welcome">
+      <h2>Baga Nagaan Dhuftan</h2>
       <p>Waan barbaadde keessaa tokko filadhu.</p>
     </div>
 
-    <div class="menu-grid">
+    <div class="menu">
 
-      <div class="menu-card" onclick="openPage('createPage')">
+      <div
+        class="menu-card"
+        onclick="showPage('createPage')"
+      >
         <div class="menu-icon">📝</div>
         <h3>Qormaata Uumi</h3>
-        <p>Qormaata haaraa uumuu fi gaaffilee itti dabaluuf.</p>
+        <p>
+          Qormaata haaraa uumuu fi
+          gaaffilee itti dabaluuf.
+        </p>
       </div>
 
-      <div class="menu-card" onclick="openPage('takePage')">
+      <div
+        class="menu-card"
+        onclick="showPage('takePage')"
+      >
         <div class="menu-icon">📖</div>
         <h3>Qormaata Fudhachuu</h3>
-        <p>Koodii qormaataa fayyadamuun qormaata fudhachuuf.</p>
+        <p>
+          Koodii qormaataa fayyadamuun
+          qormaata fudhachuuf.
+        </p>
       </div>
 
-      <div class="menu-card" onclick="openPage('myExamPage')">
+      <div
+        class="menu-card"
+        onclick="showPage('myExamPage')"
+      >
         <div class="menu-icon">📊</div>
         <h3>Qormaata Koo</h3>
-        <p>Qormaata ati uumte fi bu'aa isaa ilaaluuf.</p>
+        <p>
+          Qormaata uumame fi bu'aa
+          barattootaa ilaaluuf.
+        </p>
       </div>
 
-      <div class="menu-card" onclick="openPage('settingsPage')">
+      <div
+        class="menu-card"
+        onclick="showPage('settingsPage')"
+      >
         <div class="menu-icon">⚙️</div>
         <h3>Sirna Ilaali</h3>
-        <p>Odeeffannoo fi haala itti fayyadama sirnichaa ilaali.</p>
+        <p>
+          Odeeffannoo fi qajeelfama
+          sirnichaa ilaaluuf.
+        </p>
       </div>
 
     </div>
+
   </section>
 
 
-  <!-- =========================
-       CREATE EXAM
-  ========================== -->
+  <!-- ================= CREATE ================= -->
+
   <section id="createPage" class="page hidden">
 
     <div class="panel">
 
-      <button class="back-btn" onclick="goHome()">← Duuba</button>
+      <button
+        type="button"
+        class="back"
+        onclick="goHome()"
+      >
+        ← Duuba
+      </button>
 
-      <h2 class="panel-title">📝 Qormaata Uumi</h2>
+      <h2 class="title">
+        📝 Qormaata Uumi
+      </h2>
 
       <div id="createMessage"></div>
 
-      <div class="form-group">
+      <div class="field">
         <label>Maqaa Barsiisaa</label>
         <input
           id="teacherName"
@@ -468,16 +460,16 @@
         >
       </div>
 
-      <div class="form-group">
+      <div class="field">
         <label>Mata-duree Qormaataa</label>
         <input
           id="examTitle"
           type="text"
-          placeholder="Fakkeenya: Qormaata Ji'a Sadii"
+          placeholder="Mata-duree qormaataa"
         >
       </div>
 
-      <div class="form-group">
+      <div class="field">
         <label>Barnoota</label>
         <input
           id="examSubject"
@@ -486,7 +478,7 @@
         >
       </div>
 
-      <div class="form-group">
+      <div class="field">
         <label>Kilaasa</label>
         <input
           id="examGrade"
@@ -495,8 +487,8 @@
         >
       </div>
 
-      <div class="form-group">
-        <label>Yeroo Qormaataa (daqiiqaa)</label>
+      <div class="field">
+        <label>Yeroo (daqiiqaa)</label>
         <input
           id="examDuration"
           type="number"
@@ -506,6 +498,7 @@
       </div>
 
       <button
+        type="button"
         class="btn btn-primary"
         onclick="createExam()"
       >
@@ -515,55 +508,40 @@
     </div>
 
 
-    <!-- CREATED EXAM -->
     <div
       id="createdExamBox"
       class="panel hidden"
     >
 
-      <h3 class="panel-title">✅ Qormaanni Uumameera</h3>
+      <h2 class="title">
+        ✅ Qormaanni Uumameera
+      </h2>
 
-      <div class="success">
-        Qormaata kee amma gaaffilee itti dabali.
-      </div>
-
-      <div class="exam-info">
-        <div>
-          <strong>Mata-duree:</strong>
-          <span id="createdTitle"></span>
-        </div>
-
-        <div>
-          <strong>Barnoota:</strong>
-          <span id="createdSubject"></span>
-        </div>
-
-        <div>
-          <strong>Kilaasa:</strong>
-          <span id="createdGrade"></span>
-        </div>
-      </div>
+      <div
+        id="createdExamInfo"
+        class="exam-info"
+      ></div>
 
       <div class="code-box">
         <small>Koodii Qormaataa</small>
+
         <div
           id="createdCode"
-          class="exam-code"
+          class="code"
         ></div>
       </div>
 
-      <div>
-        <strong>🔗 Linkii Qormaataa</strong>
+      <strong>🔗 Linkii Qormaataa</strong>
 
-        <div
-          id="createdLink"
-          class="link-box"
-        ></div>
-      </div>
+      <div
+        id="createdLink"
+        class="link"
+      ></div>
 
       <button
+        type="button"
         class="btn btn-secondary"
-        onclick="copyExamLink()"
+        onclick="copyLink()"
       >
         🔗 Linkii Koppii Godhi
       </button>
@@ -571,27 +549,30 @@
     </div>
 
 
-    <!-- ADD QUESTION -->
     <div
       id="questionPanel"
       class="panel hidden"
     >
 
-      <h3 class="panel-title">➕ Gaaffii Dabali</h3>
+      <h2 class="title">
+        ➕ Gaaffii Dabali
+      </h2>
 
-      <div class="form-group">
+      <div class="field">
         <label>Gaaffii</label>
 
         <textarea
           id="questionText"
-          placeholder="Gaaffii kee barreessi..."
+          placeholder="Gaaffii barreessi..."
         ></textarea>
       </div>
 
-      <div class="form-group">
+      <div class="field">
+
         <label>Gosa Gaaffii</label>
 
         <select id="questionType">
+
           <option value="multiple">
             Filannoo A-D
           </option>
@@ -599,50 +580,36 @@
           <option value="truefalse">
             Dhugaa / Soba
           </option>
+
         </select>
+
       </div>
 
-      <div id="multipleOptions">
+      <div id="optionsArea">
 
-        <div class="form-group">
+        <div class="field">
           <label>Filannoo A</label>
-          <input
-            id="optionA"
-            type="text"
-            placeholder="A"
-          >
+          <input id="optionA" type="text">
         </div>
 
-        <div class="form-group">
+        <div class="field">
           <label>Filannoo B</label>
-          <input
-            id="optionB"
-            type="text"
-            placeholder="B"
-          >
+          <input id="optionB" type="text">
         </div>
 
-        <div class="form-group">
+        <div class="field">
           <label>Filannoo C</label>
-          <input
-            id="optionC"
-            type="text"
-            placeholder="C"
-          >
+          <input id="optionC" type="text">
         </div>
 
-        <div class="form-group">
+        <div class="field">
           <label>Filannoo D</label>
-          <input
-            id="optionD"
-            type="text"
-            placeholder="D"
-          >
+          <input id="optionD" type="text">
         </div>
 
       </div>
 
-      <div class="form-group">
+      <div class="field">
 
         <label>Deebii Sirrii</label>
 
@@ -657,20 +624,21 @@
 
       </div>
 
-      <div class="form-group">
+      <div class="field">
 
         <label>Qabxii</label>
 
         <input
           id="questionPoints"
           type="number"
-          value="1"
           min="1"
+          value="1"
         >
 
       </div>
 
       <button
+        type="button"
         class="btn btn-primary"
         onclick="addQuestion()"
       >
@@ -680,53 +648,54 @@
     </div>
 
 
-    <!-- QUESTION LIST -->
     <div
-      id="teacherQuestionsPanel"
+      id="questionsPanel"
       class="panel hidden"
     >
 
-      <h3 class="panel-title">
+      <h2 class="title">
         📋 Gaaffilee Qormaataa
-      </h3>
+      </h2>
 
-      <div id="teacherQuestions"></div>
+      <div id="questionsList"></div>
 
     </div>
 
   </section>
 
 
-  <!-- =========================
-       TAKE EXAM
-  ========================== -->
+  <!-- ================= TAKE ================= -->
+
   <section id="takePage" class="page hidden">
 
     <div class="panel">
 
       <button
-        class="back-btn"
+        type="button"
+        class="back"
         onclick="goHome()"
       >
         ← Duuba
       </button>
 
-      <h2 class="panel-title">
+      <h2 class="title">
         📖 Qormaata Fudhachuu
       </h2>
 
-      <div class="form-group">
+      <div class="field">
+
         <label>Koodii Qormaataa</label>
 
         <input
           id="joinCode"
           type="text"
-          placeholder="Fakkeenya: ABC12345"
-          style="text-transform:uppercase"
+          placeholder="ABC12345"
         >
+
       </div>
 
       <button
+        type="button"
         class="btn btn-primary"
         onclick="openExam()"
       >
@@ -736,37 +705,37 @@
     </div>
 
 
-    <!-- STUDENT EXAM -->
     <div
-      id="studentExamPanel"
+      id="studentPanel"
       class="panel hidden"
     >
 
       <button
-        class="back-btn"
+        type="button"
+        class="back"
         onclick="goHome()"
       >
         ← Duuba
       </button>
 
       <h2
-        id="studentExamTitle"
-        class="panel-title"
+        id="studentTitle"
+        class="title"
       ></h2>
 
       <div
-        id="studentExamInfo"
+        id="studentInfo"
         class="exam-info"
       ></div>
 
-      <div class="form-group">
+      <div class="field">
 
         <label>Maqaa Barataa</label>
 
         <input
           id="studentName"
           type="text"
-          placeholder="Maqaa kee galchi"
+          placeholder="Maqaa kee"
         >
 
       </div>
@@ -774,6 +743,7 @@
       <div id="studentQuestions"></div>
 
       <button
+        type="button"
         class="btn btn-primary"
         onclick="submitExam()"
       >
@@ -783,36 +753,35 @@
     </div>
 
 
-    <!-- STUDENT RESULT -->
     <div
       id="studentResultPanel"
       class="panel hidden"
     >
 
-      <h2 class="panel-title">
+      <h2 class="title">
         🏆 Bu'aa Qormaataa
       </h2>
 
       <div class="success">
-        <p>Barataa</p>
 
-        <h3 id="resultStudentName"></h3>
+        <div>Barataa</div>
+
+        <strong
+          id="resultStudentName"
+        ></strong>
+
       </div>
 
       <div
         id="studentScore"
-        class="result-number"
+        class="score"
       >
         0%
       </div>
 
       <p
         id="studentScoreText"
-        style="
-          text-align:center;
-          font-size:18px;
-          font-weight:bold;
-        "
+        style="text-align:center;font-weight:bold"
       ></p>
 
       <div
@@ -821,6 +790,7 @@
       ></div>
 
       <button
+        type="button"
         class="btn btn-primary"
         onclick="goHome()"
       >
@@ -832,9 +802,8 @@
   </section>
 
 
-  <!-- =========================
-       MY EXAM / RESULTS
-  ========================== -->
+  <!-- ================= MY EXAM ================= -->
+
   <section
     id="myExamPage"
     class="page hidden"
@@ -843,37 +812,38 @@
     <div class="panel">
 
       <button
-        class="back-btn"
+        type="button"
+        class="back"
         onclick="goHome()"
       >
         ← Duuba
       </button>
 
-      <h2 class="panel-title">
+      <h2 class="title">
         📊 Qormaata Koo
       </h2>
 
-      <div class="info-box">
-        Koodii qormaataa galchiitii bu'aa
-        barattootaa ilaali.
+      <div class="info">
+        Koodii qormaataa galchiitii
+        bu'aa barattootaa ilaali.
       </div>
 
-      <div class="form-group">
+      <div class="field">
 
         <label>Koodii Qormaataa</label>
 
         <input
           id="resultCode"
           type="text"
-          placeholder="Fakkeenya: ABC12345"
-          style="text-transform:uppercase"
+          placeholder="ABC12345"
         >
 
       </div>
 
       <button
+        type="button"
         class="btn btn-primary"
-        onclick="loadResultsByCode()"
+        onclick="loadResults()"
       >
         📊 BU'AA ILAALI
       </button>
@@ -881,15 +851,14 @@
     </div>
 
 
-    <!-- RESULTS -->
     <div
       id="resultsPanel"
       class="panel hidden"
     >
 
-      <h3 class="panel-title">
-        📊 Bu'aa Qormaataa
-      </h3>
+      <h2 class="title">
+        📊 Bu'aa
+      </h2>
 
       <div id="resultsContent"></div>
 
@@ -898,9 +867,8 @@
   </section>
 
 
-  <!-- =========================
-       SETTINGS
-  ========================== -->
+  <!-- ================= SETTINGS ================= -->
+
   <section
     id="settingsPage"
     class="page hidden"
@@ -909,26 +877,33 @@
     <div class="panel">
 
       <button
-        class="back-btn"
+        type="button"
+        class="back"
         onclick="goHome()"
       >
         ← Duuba
       </button>
 
-      <h2 class="panel-title">
+      <h2 class="title">
         ⚙️ Sirna Ilaali
       </h2>
 
-      <div class="info-box">
+      <div class="info">
 
-        <strong>🎯 Hidaayatul-Bayaan</strong>
+        <strong>
+          🎯 Hidaayatul-Bayaan
+        </strong>
 
         <br><br>
 
-        Sirna qormaataa barattootaa kan
-        barsiisaan qormaata uumuu,
-        gaaffilee dabaluufi bu'aa
-        barattootaa ilaaluuf gargaaru.
+        Sirna qormaataa barattootaa.
+
+        <br><br>
+
+        Barsiisaan qormaata uuma,
+        gaaffilee dabala, linkii qooda,
+        barattoonni qormaata fudhatu,
+        bu'aan immoo ni mul'ata.
 
       </div>
 
@@ -936,26 +911,25 @@
 
         <strong>Akkaataa itti fayyadama:</strong>
 
-        <br>
+        <br><br>
 
-        1. 📝 Qormaata Uumi
-
-        <br>
-
-        2. ➕ Gaaffilee itti dabali
+        1️⃣ Qormaata Uumi
 
         <br>
 
-        3. 🔗 Koodii ykn linkii qormaataa
-        barattootaaf qoodi
+        2️⃣ Gaaffilee dabali
 
         <br>
 
-        4. 📖 Barattoonni qormaata haa fudhatan
+        3️⃣ Koodii ykn linkii qoodi
 
         <br>
 
-        5. 📊 Bu'aa Qormaataa Koo keessatti ilaali
+        4️⃣ Barattoonni qormaata haa fudhatan
+
+        <br>
+
+        5️⃣ Qormaata Koo keessaa bu'aa ilaali
 
       </div>
 
@@ -968,17 +942,21 @@
 
 <script>
 
+  /* =====================================================
+     GLOBAL VARIABLES
+  ===================================================== */
+
   let currentExam = null;
   let studentQuestions = [];
 
 
-  /* =========================
-     PAGE SYSTEM
-  ========================== */
+  /* =====================================================
+     PAGE NAVIGATION
+  ===================================================== */
 
-  function hideAllPages() {
+  function hidePages() {
 
-    const pages = [
+    const ids = [
       "homePage",
       "createPage",
       "takePage",
@@ -986,9 +964,10 @@
       "settingsPage"
     ];
 
-    pages.forEach(id => {
+    ids.forEach(function(id) {
 
-      const el = document.getElementById(id);
+      const el =
+        document.getElementById(id);
 
       if (el) {
         el.classList.add("hidden");
@@ -999,66 +978,45 @@
   }
 
 
-  function openPage(id) {
+  function showPage(id) {
 
-    hideAllPages();
+    hidePages();
 
-    const page = document.getElementById(id);
+    const page =
+      document.getElementById(id);
 
-    if (page) {
-      page.classList.remove("hidden");
+    if (!page) {
+
+      alert(
+        "Fuulli barbaadame hin argamne."
+      );
+
+      return;
     }
 
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth"
-    });
+    page.classList.remove("hidden");
+
+    window.scrollTo(0, 0);
 
   }
 
 
   function goHome() {
 
-    hideAllPages();
+    hidePages();
 
     document
       .getElementById("homePage")
       .classList.remove("hidden");
 
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth"
-    });
+    window.scrollTo(0, 0);
 
   }
 
 
-  /* =========================
-     MESSAGE
-  ========================== */
-
-  function showMessage(
-    elementId,
-    message,
-    type = "success"
-  ) {
-
-    const el = document.getElementById(elementId);
-
-    if (!el) return;
-
-    el.innerHTML = `
-      <div class="${type}">
-        ${message}
-      </div>
-    `;
-
-  }
-
-
-  /* =========================
+  /* =====================================================
      CREATE EXAM
-  ========================== */
+  ===================================================== */
 
   async function createExam() {
 
@@ -1093,10 +1051,9 @@
 
     if (!teacher_name || !title) {
 
-      showMessage(
+      showError(
         "createMessage",
-        "❌ Maqaa barsiisaa fi mata-duree qormaataa guuti.",
-        "danger"
+        "Maqaa barsiisaa fi mata-duree guuti."
       );
 
       return;
@@ -1104,34 +1061,37 @@
 
     try {
 
-      const response = await fetch(
-        "/api/exams",
-        {
-          method: "POST",
+      const response =
+        await fetch(
+          "/api/exams",
+          {
+            method: "POST",
 
-          headers: {
-            "Content-Type":
-              "application/json"
-          },
+            headers: {
+              "Content-Type":
+                "application/json"
+            },
 
-          body: JSON.stringify({
-            teacher_name,
-            title,
-            subject,
-            grade,
-            duration
-          })
-        }
-      );
+            body: JSON.stringify({
+              teacher_name,
+              title,
+              subject,
+              grade,
+              duration
+            })
+          }
+        );
 
       const data =
         await response.json();
 
       if (!response.ok) {
+
         throw new Error(
           data.error ||
           "Qormaata uumuu hin dandeenye."
         );
+
       }
 
       currentExam = data.exam;
@@ -1145,23 +1105,33 @@
         .classList.remove("hidden");
 
       document
-        .getElementById("teacherQuestionsPanel")
+        .getElementById("questionsPanel")
         .classList.remove("hidden");
 
       document
-        .getElementById("createdTitle")
-        .textContent =
-        currentExam.title || "";
+        .getElementById("createdExamInfo")
+        .innerHTML = `
 
-      document
-        .getElementById("createdSubject")
-        .textContent =
-        currentExam.subject || "";
+          <strong>Mata-duree:</strong>
+          ${safe(currentExam.title)}
 
-      document
-        .getElementById("createdGrade")
-        .textContent =
-        currentExam.grade || "";
+          <br>
+
+          <strong>Barnoota:</strong>
+          ${safe(currentExam.subject || "-")}
+
+          <br>
+
+          <strong>Kilaasa:</strong>
+          ${safe(currentExam.grade || "-")}
+
+          <br>
+
+          <strong>Yeroo:</strong>
+          ${Number(currentExam.duration || 30)}
+          daqiiqaa
+
+        `;
 
       document
         .getElementById("createdCode")
@@ -1169,33 +1139,28 @@
         currentExam.exam_code;
 
       const link =
-        `${window.location.origin}/?exam=${encodeURIComponent(
+        window.location.origin +
+        "/?exam=" +
+        encodeURIComponent(
           currentExam.exam_code
-        )}`;
+        );
 
       document
         .getElementById("createdLink")
         .textContent = link;
 
-      showMessage(
+      showSuccess(
         "createMessage",
-        "✅ Qormaanni milkaa'inaan uumameera."
+        "Qormaanni milkaa'inaan uumameera."
       );
 
-      await loadTeacherQuestions();
-
-      document
-        .getElementById("createdExamBox")
-        .scrollIntoView({
-          behavior: "smooth"
-        });
+      await loadQuestions();
 
     } catch (error) {
 
-      showMessage(
+      showError(
         "createMessage",
-        "❌ " + error.message,
-        "danger"
+        error.message
       );
 
     }
@@ -1203,11 +1168,11 @@
   }
 
 
-  /* =========================
+  /* =====================================================
      COPY LINK
-  ========================== */
+  ===================================================== */
 
-  async function copyExamLink() {
+  async function copyLink() {
 
     const link =
       document
@@ -1219,13 +1184,13 @@
       await navigator.clipboard.writeText(link);
 
       alert(
-        "✅ Linkiin qormaataa koppii ta'eera."
+        "✅ Linkiin koppii ta'eera."
       );
 
     } catch {
 
-      alert(
-        "Linkii kana harkaan koppii godhi:\n\n" +
+      prompt(
+        "Linkii kana koppii godhi:",
         link
       );
 
@@ -1234,21 +1199,19 @@
   }
 
 
-  /* =========================
+  /* =====================================================
      QUESTION TYPE
-  ========================== */
+  ===================================================== */
 
   document
     .getElementById("questionType")
     .addEventListener(
       "change",
-      function () {
-
-        const type = this.value;
+      function() {
 
         const options =
           document.getElementById(
-            "multipleOptions"
+            "optionsArea"
           );
 
         const correct =
@@ -1256,7 +1219,7 @@
             "correctAnswer"
           );
 
-        if (type === "truefalse") {
+        if (this.value === "truefalse") {
 
           options.innerHTML = "";
 
@@ -1274,40 +1237,24 @@
 
           options.innerHTML = `
 
-            <div class="form-group">
+            <div class="field">
               <label>Filannoo A</label>
-              <input
-                id="optionA"
-                type="text"
-                placeholder="A"
-              >
+              <input id="optionA" type="text">
             </div>
 
-            <div class="form-group">
+            <div class="field">
               <label>Filannoo B</label>
-              <input
-                id="optionB"
-                type="text"
-                placeholder="B"
-              >
+              <input id="optionB" type="text">
             </div>
 
-            <div class="form-group">
+            <div class="field">
               <label>Filannoo C</label>
-              <input
-                id="optionC"
-                type="text"
-                placeholder="C"
-              >
+              <input id="optionC" type="text">
             </div>
 
-            <div class="form-group">
+            <div class="field">
               <label>Filannoo D</label>
-              <input
-                id="optionD"
-                type="text"
-                placeholder="D"
-              >
+              <input id="optionD" type="text">
             </div>
 
           `;
@@ -1327,9 +1274,9 @@
     );
 
 
-  /* =========================
+  /* =====================================================
      ADD QUESTION
-  ========================== */
+  ===================================================== */
 
   async function addQuestion() {
 
@@ -1363,10 +1310,10 @@
         .getElementById("questionPoints")
         .value;
 
-    if (!question || !correct_answer) {
+    if (!question) {
 
       alert(
-        "Gaaffii fi deebii sirrii guuti."
+        "Gaaffii galchi."
       );
 
       return;
@@ -1419,14 +1366,20 @@
             },
 
             body: JSON.stringify({
+
               question,
               type,
+
               option_a,
               option_b,
               option_c,
               option_d,
+
               correct_answer,
-              points
+
+              points:
+                Number(points) || 1
+
             })
           }
         );
@@ -1447,26 +1400,26 @@
         .getElementById("questionText")
         .value = "";
 
-      document
-        .getElementById("optionA")
-        ?.value = "";
+      [
+        "optionA",
+        "optionB",
+        "optionC",
+        "optionD"
+      ].forEach(function(id) {
 
-      document
-        .getElementById("optionB")
-        ?.value = "";
+        const el =
+          document.getElementById(id);
 
-      document
-        .getElementById("optionC")
-        ?.value = "";
+        if (el) {
+          el.value = "";
+        }
 
-      document
-        .getElementById("optionD")
-        ?.value = "";
+      });
 
-      await loadTeacherQuestions();
+      await loadQuestions();
 
       alert(
-        "✅ Gaaffiin milkaa'inaan dabalamera."
+        "✅ Gaaffiin dabalameera."
       );
 
     } catch (error) {
@@ -1480,21 +1433,21 @@
   }
 
 
-  /* =========================
-     LOAD TEACHER QUESTIONS
-  ========================== */
+  /* =====================================================
+     LOAD QUESTIONS
+  ===================================================== */
 
-  async function loadTeacherQuestions() {
+  async function loadQuestions() {
 
     if (!currentExam) return;
 
     const box =
       document.getElementById(
-        "teacherQuestions"
+        "questionsList"
       );
 
     box.innerHTML =
-      `<div class="loading">
+      `<div class="empty">
         Gaaffilee fe'aa...
       </div>`;
 
@@ -1522,41 +1475,46 @@
         data.questions.length === 0
       ) {
 
-        box.innerHTML = `
-          <div class="empty">
+        box.innerHTML =
+          `<div class="empty">
             Ammaaf gaaffiin hin jiru.
-          </div>
-        `;
+          </div>`;
 
         return;
       }
 
       box.innerHTML =
         data.questions
-          .map((q, index) => {
+          .map(function(q, i) {
 
             return `
-              <div class="question-list-item">
 
-                <strong>
-                  ${index + 1}. ${escapeHtml(q.question)}
-                </strong>
+              <div class="question">
+
+                <div class="question-number">
+                  Gaaffii ${i + 1}
+                </div>
+
+                <div class="question-text">
+                  ${safe(q.question)}
+                </div>
 
                 <div class="small">
-                  Gosa: ${escapeHtml(q.type)}
+                  Gosa: ${safe(q.type)}
                   <br>
                   Qabxii: ${Number(q.points || 1)}
                 </div>
 
                 <button
+                  type="button"
                   class="btn btn-danger"
-                  style="margin-top:8px"
                   onclick="deleteQuestion('${q.id}')"
                 >
                   🗑️ Haqi
                 </button>
 
               </div>
+
             `;
 
           })
@@ -1565,8 +1523,8 @@
     } catch (error) {
 
       box.innerHTML = `
-        <div class="danger">
-          ❌ ${escapeHtml(error.message)}
+        <div class="error">
+          ❌ ${safe(error.message)}
         </div>
       `;
 
@@ -1575,9 +1533,9 @@
   }
 
 
-  /* =========================
+  /* =====================================================
      DELETE QUESTION
-  ========================== */
+  ===================================================== */
 
   async function deleteQuestion(id) {
 
@@ -1611,7 +1569,7 @@
 
       }
 
-      await loadTeacherQuestions();
+      await loadQuestions();
 
     } catch (error) {
 
@@ -1624,13 +1582,11 @@
   }
 
 
-  /* =========================
+  /* =====================================================
      OPEN EXAM
-  ========================== */
+  ===================================================== */
 
-  async function openExam(
-    suppliedCode = null
-  ) {
+  async function openExam(codeFromLink = null) {
 
     const input =
       document.getElementById(
@@ -1639,11 +1595,11 @@
 
     const code =
       (
-        suppliedCode ||
+        codeFromLink ||
         input.value
       )
-        .trim()
-        .toUpperCase();
+      .trim()
+      .toUpperCase();
 
     if (!code) {
 
@@ -1653,14 +1609,6 @@
 
       return;
     }
-
-    openPage("takePage");
-
-    document
-      .getElementById(
-        "studentExamPanel"
-      )
-      .classList.add("hidden");
 
     try {
 
@@ -1676,41 +1624,45 @@
 
         throw new Error(
           data.error ||
-          "Qormaata kana hin arganne."
+          "Qormaata hin argamne."
         );
 
       }
 
       currentExam = data.exam;
+
       studentQuestions =
         data.questions || [];
 
       document
-        .getElementById(
-          "studentExamPanel"
-        )
+        .getElementById("studentPanel")
         .classList.remove("hidden");
 
       document
-        .getElementById(
-          "studentExamTitle"
-        )
+        .getElementById("studentResultPanel")
+        .classList.add("hidden");
+
+      document
+        .getElementById("studentTitle")
         .textContent =
         currentExam.title;
 
       document
-        .getElementById(
-          "studentExamInfo"
-        )
+        .getElementById("studentInfo")
         .innerHTML = `
 
           <strong>Barnoota:</strong>
-          ${escapeHtml(currentExam.subject || "-")}
+          ${safe(currentExam.subject || "-")}
 
           <br>
 
           <strong>Kilaasa:</strong>
-          ${escapeHtml(currentExam.grade || "-")}
+          ${safe(currentExam.grade || "-")}
+
+          <br>
+
+          <strong>Barsiisaa:</strong>
+          ${safe(currentExam.teacher_name || "-")}
 
           <br>
 
@@ -1718,19 +1670,14 @@
           ${Number(currentExam.duration || 30)}
           daqiiqaa
 
-          <br>
-
-          <strong>Barsiisaa:</strong>
-          ${escapeHtml(currentExam.teacher_name || "-")}
-
         `;
 
       renderStudentQuestions();
 
+      showPage("takePage");
+
       document
-        .getElementById(
-          "studentExamPanel"
-        )
+        .getElementById("studentPanel")
         .scrollIntoView({
           behavior: "smooth"
         });
@@ -1746,9 +1693,9 @@
   }
 
 
-  /* =========================
-     RENDER STUDENT QUESTIONS
-  ========================== */
+  /* =====================================================
+     STUDENT QUESTIONS
+  ===================================================== */
 
   function renderStudentQuestions() {
 
@@ -1757,43 +1704,39 @@
         "studentQuestions"
       );
 
-    if (
-      !studentQuestions ||
-      studentQuestions.length === 0
-    ) {
+    if (!studentQuestions.length) {
 
-      box.innerHTML = `
-        <div class="empty">
+      box.innerHTML =
+        `<div class="empty">
           Qormaata kana keessatti
           gaaffiin hin jiru.
-        </div>
-      `;
+        </div>`;
 
       return;
     }
 
     box.innerHTML =
       studentQuestions
-        .map((q, index) => {
+        .map(function(q, index) {
 
           if (q.type === "truefalse") {
 
             return `
 
-              <div class="question-card">
+              <div class="question">
 
                 <div class="question-number">
                   Gaaffii ${index + 1}
                 </div>
 
                 <div class="question-text">
-                  ${escapeHtml(q.question)}
+                  ${safe(q.question)}
                 </div>
 
                 <label class="option">
                   <input
                     type="radio"
-                    name="q_${q.id}"
+                    name="question_${q.id}"
                     value="Dhugaa"
                   >
                   <span>Dhugaa</span>
@@ -1802,7 +1745,7 @@
                 <label class="option">
                   <input
                     type="radio"
-                    name="q_${q.id}"
+                    name="question_${q.id}"
                     value="Soba"
                   >
                   <span>Soba</span>
@@ -1816,35 +1759,35 @@
 
           return `
 
-            <div class="question-card">
+            <div class="question">
 
               <div class="question-number">
                 Gaaffii ${index + 1}
               </div>
 
               <div class="question-text">
-                ${escapeHtml(q.question)}
+                ${safe(q.question)}
               </div>
 
-              ${renderOption(
+              ${studentOption(
                 q.id,
                 "A",
                 q.option_a
               )}
 
-              ${renderOption(
+              ${studentOption(
                 q.id,
                 "B",
                 q.option_b
               )}
 
-              ${renderOption(
+              ${studentOption(
                 q.id,
                 "C",
                 q.option_c
               )}
 
-              ${renderOption(
+              ${studentOption(
                 q.id,
                 "D",
                 q.option_d
@@ -1860,9 +1803,9 @@
   }
 
 
-  function renderOption(
-    questionId,
-    value,
+  function studentOption(
+    id,
+    letter,
     text
   ) {
 
@@ -1874,13 +1817,13 @@
 
         <input
           type="radio"
-          name="q_${questionId}"
-          value="${value}"
+          name="question_${id}"
+          value="${letter}"
         >
 
         <span>
-          <strong>${value}.</strong>
-          ${escapeHtml(text)}
+          <strong>${letter}.</strong>
+          ${safe(text)}
         </span>
 
       </label>
@@ -1890,9 +1833,9 @@
   }
 
 
-  /* =========================
+  /* =====================================================
      SUBMIT EXAM
-  ========================== */
+  ===================================================== */
 
   async function submitExam() {
 
@@ -1922,23 +1865,25 @@
 
     const answers = {};
 
-    studentQuestions.forEach(q => {
+    studentQuestions.forEach(function(q) {
 
       const selected =
         document.querySelector(
-          `input[name="q_${q.id}"]:checked`
+          `input[name="question_${q.id}"]:checked`
         );
 
       if (selected) {
+
         answers[q.id] =
           selected.value;
+
       }
 
     });
 
     if (
       !confirm(
-        "Qormaata erguu mirkaneeffattaa?"
+        "Qormaata erguu barbaaddaa?"
       )
     ) {
       return;
@@ -1977,11 +1922,12 @@
 
       }
 
-      const r = data.result;
+      const result =
+        data.result;
 
       document
         .getElementById(
-          "studentExamPanel"
+          "studentPanel"
         )
         .classList.add("hidden");
 
@@ -1996,41 +1942,32 @@
           "resultStudentName"
         )
         .textContent =
-        r.student_name;
+        result.student_name;
 
       document
         .getElementById(
           "studentScore"
         )
         .textContent =
-        `${r.percentage}%`;
+        result.percentage + "%";
 
       document
         .getElementById(
           "studentScoreText"
         )
         .textContent =
-        `${r.score} / ${r.total}`;
+        result.score +
+        " / " +
+        result.total;
 
-      if (Number(r.percentage) >= 50) {
-
-        document
-          .getElementById(
-            "resultMessage"
-          )
-          .textContent =
-          "🎉 Qormaata milkaa'inaan xumurtee jirta.";
-
-      } else {
-
-        document
-          .getElementById(
-            "resultMessage"
-          )
-          .textContent =
-          "📚 Qormaata irra deebitee barachuun gaarii dha.";
-
-      }
+      document
+        .getElementById(
+          "resultMessage"
+        )
+        .textContent =
+        Number(result.percentage) >= 50
+          ? "🎉 Qormaata milkaa'inaan xumurtee jirta."
+          : "📚 Barnoota kee itti fufi; qormaata irra deebitee ilaali.";
 
       document
         .getElementById(
@@ -2051,11 +1988,11 @@
   }
 
 
-  /* =========================
-     LOAD RESULTS
-  ========================== */
+  /* =====================================================
+     RESULTS
+  ===================================================== */
 
-  async function loadResultsByCode() {
+  async function loadResults() {
 
     const code =
       document
@@ -2085,11 +2022,10 @@
 
     panel.classList.remove("hidden");
 
-    content.innerHTML = `
-      <div class="loading">
+    content.innerHTML =
+      `<div class="empty">
         Bu'aa fe'aa...
-      </div>
-    `;
+      </div>`;
 
     try {
 
@@ -2110,36 +2046,33 @@
 
       }
 
-      const examId =
-        examData.exam.id;
-
-      const resultResponse =
+      const resultsResponse =
         await fetch(
-          `/api/exams/${examId}/results`
+          `/api/exams/${examData.exam.id}/results`
         );
 
-      const resultData =
-        await resultResponse.json();
+      const resultsData =
+        await resultsResponse.json();
 
-      if (!resultResponse.ok) {
+      if (!resultsResponse.ok) {
 
         throw new Error(
-          resultData.error ||
-          "Bu'aa argachuu hin dandeenye."
+          resultsData.error ||
+          "Bu'aa hin argamne."
         );
 
       }
 
       renderResults(
-        resultData.results || [],
+        resultsData.results || [],
         examData.exam
       );
 
     } catch (error) {
 
       content.innerHTML = `
-        <div class="danger">
-          ❌ ${escapeHtml(error.message)}
+        <div class="error">
+          ❌ ${safe(error.message)}
         </div>
       `;
 
@@ -2147,10 +2080,6 @@
 
   }
 
-
-  /* =========================
-     RENDER RESULTS
-  ========================== */
 
   function renderResults(
     results,
@@ -2164,16 +2093,11 @@
 
     if (!results.length) {
 
-      content.innerHTML = `
-
-        <div class="empty">
-
+      content.innerHTML =
+        `<div class="empty">
           Qormaata kana irratti
           bu'aan barataa hin jiru.
-
-        </div>
-
-      `;
+        </div>`;
 
       return;
     }
@@ -2183,162 +2107,70 @@
       <div class="exam-info">
 
         <strong>Qormaata:</strong>
-        ${escapeHtml(exam.title)}
+        ${safe(exam.title)}
 
         <br>
 
         <strong>Koodii:</strong>
-        ${escapeHtml(exam.exam_code)}
+        ${safe(exam.exam_code)}
 
       </div>
 
     `;
 
-    results.forEach(
-      (result, index) => {
+    results.forEach(function(r, index) {
 
-        html += `
+      html += `
 
-          <div class="result-card">
+        <div class="result">
 
-            <h3>
-              ${index + 1}.
-              ${escapeHtml(result.student_name)}
-            </h3>
+          <h3>
+            ${index + 1}.
+            ${safe(r.student_name)}
+          </h3>
 
-            <div class="result-number">
-              ${result.percentage}%
-            </div>
+          <div class="score">
+            ${r.percentage}%
+          </div>
 
-            <div class="exam-info">
+          <div class="exam-info">
 
-              <strong>Qabxii:</strong>
-              ${result.score}/${result.total}
+            <strong>Qabxii:</strong>
+            ${r.score}/${r.total}
 
-              <br>
+            <br>
 
-              <strong>Sirrii:</strong>
-              ${result.correct_count}
+            <strong>Sirrii:</strong>
+            ${r.correct_count}
 
-              <br>
+            <br>
 
-              <strong>Dogoggora:</strong>
-              ${result.wrong_count}
+            <strong>Dogoggora:</strong>
+            ${r.wrong_count}
 
-              <br>
+            <br>
 
-              <strong>Hin deebifamne:</strong>
-              ${result.unanswered_count}
-
-            </div>
-
-            <button
-              class="btn btn-secondary"
-              onclick="toggleDetails('details_${index}')"
-            >
-              🔍 Bal'ina Ilaali
-            </button>
-
-            <div
-              id="details_${index}"
-              class="hidden"
-              style="margin-top:12px"
-            >
-
-              ${renderDetails(
-                result.details || []
-              )}
-
-            </div>
+            <strong>Hin deebifamne:</strong>
+            ${r.unanswered_count}
 
           </div>
 
-        `;
+        </div>
 
-      }
-    );
+      `;
+
+    });
 
     content.innerHTML = html;
 
   }
 
 
-  function renderDetails(details) {
+  /* =====================================================
+     SAFE TEXT
+  ===================================================== */
 
-    if (!details.length) {
-      return `
-        <div class="empty">
-          Bal'inni hin jiru.
-        </div>
-      `;
-    }
-
-    return details
-      .map((d, index) => {
-
-        let statusText = "⏳ Hin deebifamne";
-
-        if (d.status === "correct") {
-          statusText = "✅ Sirrii";
-        }
-
-        if (d.status === "wrong") {
-          statusText = "❌ Dogoggora";
-        }
-
-        return `
-
-          <div class="question-card">
-
-            <strong>
-              ${index + 1}. ${escapeHtml(d.question)}
-            </strong>
-
-            <p style="margin-top:8px">
-              <strong>Deebii barataa:</strong>
-              ${escapeHtml(
-                d.student_answer || "-"
-              )}
-            </p>
-
-            <p>
-              <strong>Deebii sirrii:</strong>
-              ${escapeHtml(
-                d.correct_answer || "-"
-              )}
-            </p>
-
-            <p>
-              ${statusText}
-            </p>
-
-          </div>
-
-        `;
-
-      })
-      .join("");
-
-  }
-
-
-  function toggleDetails(id) {
-
-    const el =
-      document.getElementById(id);
-
-    if (!el) return;
-
-    el.classList.toggle("hidden");
-
-  }
-
-
-  /* =========================
-     HTML SAFETY
-  ========================== */
-
-  function escapeHtml(value) {
+  function safe(value) {
 
     return String(value ?? "")
       .replace(/&/g, "&amp;")
@@ -2350,9 +2182,51 @@
   }
 
 
-  /* =========================
-     EXAM LINK
-  ========================== */
+  /* =====================================================
+     MESSAGES
+  ===================================================== */
+
+  function showError(
+    id,
+    message
+  ) {
+
+    const el =
+      document.getElementById(id);
+
+    if (!el) return;
+
+    el.innerHTML = `
+      <div class="error">
+        ❌ ${safe(message)}
+      </div>
+    `;
+
+  }
+
+
+  function showSuccess(
+    id,
+    message
+  ) {
+
+    const el =
+      document.getElementById(id);
+
+    if (!el) return;
+
+    el.innerHTML = `
+      <div class="success">
+        ✅ ${safe(message)}
+      </div>
+    `;
+
+  }
+
+
+  /* =====================================================
+     OPEN EXAM FROM LINK
+  ===================================================== */
 
   function checkExamLink() {
 
@@ -2361,34 +2235,34 @@
         window.location.search
       );
 
-    const examCode =
+    const code =
       params.get("exam");
 
-    if (examCode) {
+    if (!code) return;
 
-      openPage("takePage");
+    showPage("takePage");
 
-      document
-        .getElementById("joinCode")
-        .value =
-        examCode.toUpperCase();
+    document
+      .getElementById("joinCode")
+      .value =
+      code.toUpperCase();
 
-      openExam(
-        examCode.toUpperCase()
-      );
-
-    }
+    openExam(
+      code.toUpperCase()
+    );
 
   }
 
 
-  /* =========================
+  /* =====================================================
      START
-  ========================== */
+  ===================================================== */
 
-  window.addEventListener(
+  document.addEventListener(
     "DOMContentLoaded",
-    () => {
+    function() {
+
+      goHome();
 
       checkExamLink();
 
@@ -2398,4 +2272,4 @@
 </script>
 
 </body>
-    </html>
+        </html>
