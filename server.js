@@ -26,6 +26,10 @@ app.use(express.json({ limit: "2mb" }));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "public")));
 
+/* =========================
+   HELPER
+========================= */
+
 function makeCode(length = 8) {
   return crypto
     .randomBytes(10)
@@ -39,16 +43,18 @@ function cleanQuestion(question) {
     id: question.id,
     question: question.question,
     type: question.type,
-    option_a: question.option_a,
-    option_b: question.option_b,
-    option_c: question.option_c,
-    option_d: question.option_d,
+    option_a: question.option_a || "",
+    option_b: question.option_b || "",
+    option_c: question.option_c || "",
+    option_d: question.option_d || "",
     points: Number(question.points || 1)
   };
 }
 
 /*
-  Deebii barataa fi deebii sirrii wal bira qabsiisa.
+  Deebii barataa qorata.
+  Kun SERVER KEESSA qofa fayyada.
+  Barataaf hin ergamu.
 */
 function analyzeAnswers(questions, answers) {
   const answerMap = answers || {};
@@ -126,14 +132,20 @@ function analyzeAnswers(questions, answers) {
   };
 }
 
-/* HOME */
+/* =========================
+   HOME
+========================= */
+
 app.get("/", (req, res) => {
   res.sendFile(
     path.join(__dirname, "public", "index.html")
   );
 });
 
-/* HEALTH */
+/* =========================
+   HEALTH
+========================= */
+
 app.get("/api/health", async (req, res) => {
   try {
     const { error } = await supabase
@@ -161,7 +173,10 @@ app.get("/api/health", async (req, res) => {
   }
 });
 
-/* CREATE EXAM */
+/* =========================
+   CREATE EXAM
+========================= */
+
 app.post("/api/exams", async (req, res) => {
   try {
     const {
@@ -211,7 +226,10 @@ app.post("/api/exams", async (req, res) => {
   }
 });
 
-/* ADD QUESTION */
+/* =========================
+   ADD QUESTION
+========================= */
+
 app.post(
   "/api/exams/:id/questions",
   async (req, res) => {
@@ -231,17 +249,19 @@ app.post(
 
       if (!question || !correct_answer) {
         return res.status(400).json({
-          error: "Gaaffii fi deebii sirrii guuti."
+          error:
+            "Gaaffii fi deebii sirrii guuti."
         });
       }
 
-      const { data: exam } = await supabase
-        .from("exams")
-        .select("id")
-        .eq("id", examId)
-        .single();
+      const { data: exam, error: examError } =
+        await supabase
+          .from("exams")
+          .select("id")
+          .eq("id", examId)
+          .single();
 
-      if (!exam) {
+      if (examError || !exam) {
         return res.status(404).json({
           error: "Qormaanni hin argamne."
         });
@@ -281,7 +301,10 @@ app.post(
   }
 );
 
-/* GET EXAM BY CODE */
+/* =========================
+   GET EXAM BY CODE
+========================= */
+
 app.get(
   "/api/exams/code/:code",
   async (req, res) => {
@@ -289,14 +312,16 @@ app.get(
       const code =
         req.params.code.toUpperCase();
 
-      const { data: exam, error } =
-        await supabase
-          .from("exams")
-          .select("*")
-          .eq("exam_code", code)
-          .single();
+      const {
+        data: exam,
+        error: examError
+      } = await supabase
+        .from("exams")
+        .select("*")
+        .eq("exam_code", code)
+        .single();
 
-      if (error || !exam) {
+      if (examError || !exam) {
         return res.status(404).json({
           error:
             "Qormaata kana hin arganne."
@@ -305,7 +330,7 @@ app.get(
 
       const {
         data: questions,
-        error: qError
+        error: questionError
       } = await supabase
         .from("questions")
         .select("*")
@@ -314,9 +339,9 @@ app.get(
           ascending: true
         });
 
-      if (qError) {
+      if (questionError) {
         return res.status(500).json({
-          error: qError.message
+          error: questionError.message
         });
       }
 
@@ -330,6 +355,7 @@ app.get(
           exam_code: exam.exam_code,
           teacher_name: exam.teacher_name
         },
+
         questions:
           questions.map(cleanQuestion)
       });
@@ -341,7 +367,12 @@ app.get(
   }
 );
 
-/* SUBMIT EXAM */
+/* =========================
+   SUBMIT EXAM
+   BARATAAFA:
+   QABXII QOFA
+========================= */
+
 app.post(
   "/api/exams/:id/submit",
   async (req, res) => {
@@ -378,7 +409,7 @@ app.post(
 
       const {
         data: questions,
-        error: qError
+        error: questionError
       } = await supabase
         .from("questions")
         .select("*")
@@ -387,9 +418,10 @@ app.post(
           ascending: true
         });
 
-      if (qError) {
+      if (questionError) {
         return res.status(500).json({
-          error: qError.message
+          error:
+            questionError.message
         });
       }
 
@@ -398,6 +430,14 @@ app.post(
           questions,
           answers
         );
+
+      /*
+        answers database keessatti kuufama.
+        Garuu response keessatti
+        details hin ergamu.
+        Kanaaf barataan deebii sirrii
+        hin argu.
+      */
 
       const {
         data: result,
@@ -423,25 +463,22 @@ app.post(
         });
       }
 
+      /* BARATAAFA QABXII QOFA */
       res.json({
         success: true,
+
         result: {
           id: result.id,
           student_name,
           score: analysis.score,
           total: analysis.total,
           percentage:
-            analysis.percentage,
-          correct_count:
-            analysis.correct_count,
-          wrong_count:
-            analysis.wrong_count,
-          unanswered_count:
-            analysis.unanswered_count,
-          details: analysis.details
+            analysis.percentage
         }
       });
+
     } catch (error) {
+
       console.error(
         "SUBMIT ERROR:",
         error
@@ -454,90 +491,11 @@ app.post(
   }
 );
 
-/*
-  BU'AA BARATAA TOKKO
-*/
-app.get(
-  "/api/results/:resultId",
-  async (req, res) => {
-    try {
-      const { data: result, error } =
-        await supabase
-          .from("results")
-          .select("*")
-          .eq(
-            "id",
-            req.params.resultId
-          )
-          .single();
+/* =========================
+   BARSIISAAF
+   RESULTS HUNDAA
+========================= */
 
-      if (error || !result) {
-        return res.status(404).json({
-          error:
-            "Bu'aan hin argamne."
-        });
-      }
-
-      const {
-        data: questions,
-        error: qError
-      } = await supabase
-        .from("questions")
-        .select("*")
-        .eq(
-          "exam_id",
-          result.exam_id
-        )
-        .order("created_at", {
-          ascending: true
-        });
-
-      if (qError) {
-        return res.status(500).json({
-          error: qError.message
-        });
-      }
-
-      const analysis =
-        analyzeAnswers(
-          questions,
-          result.answers || {}
-        );
-
-      res.json({
-        result: {
-          id: result.id,
-          exam_id: result.exam_id,
-          student_name:
-            result.student_name,
-          score: analysis.score,
-          total: analysis.total,
-          percentage:
-            analysis.percentage,
-          correct_count:
-            analysis.correct_count,
-          wrong_count:
-            analysis.wrong_count,
-          unanswered_count:
-            analysis.unanswered_count,
-          created_at:
-            result.created_at
-        },
-        details:
-          analysis.details
-      });
-    } catch (error) {
-      res.status(500).json({
-        error: error.message
-      });
-    }
-  }
-);
-
-/*
-  BARSIISAAF:
-  BU'AA BARATTOOTA HUNDAA
-*/
 app.get(
   "/api/exams/:id/results",
   async (req, res) => {
@@ -553,10 +511,16 @@ app.get(
         .select(
           "id, exam_id, student_name, score, total, percentage, answers, created_at"
         )
-        .eq("exam_id", examId)
-        .order("created_at", {
-          ascending: false
-        });
+        .eq(
+          "exam_id",
+          examId
+        )
+        .order(
+          "created_at",
+          {
+            ascending: false
+          }
+        );
 
       if (error) {
         return res.status(500).json({
@@ -566,23 +530,37 @@ app.get(
 
       const {
         data: questions,
-        error: qError
+        error: questionError
       } = await supabase
         .from("questions")
         .select("*")
-        .eq("exam_id", examId)
-        .order("created_at", {
-          ascending: true
-        });
+        .eq(
+          "exam_id",
+          examId
+        )
+        .order(
+          "created_at",
+          {
+            ascending: true
+          }
+        );
 
-      if (qError) {
+      if (questionError) {
         return res.status(500).json({
-          error: qError.message
+          error:
+            questionError.message
         });
       }
 
+      /*
+        As keessatti qofa
+        deebii sirrii fi dogoggoraa
+        barsiisaaf qopheessina.
+      */
+
       const detailedResults =
-        results.map((result) => {
+        results.map(result => {
+
           const analysis =
             analyzeAnswers(
               questions,
@@ -591,21 +569,29 @@ app.get(
 
           return {
             id: result.id,
-            exam_id: result.exam_id,
+            exam_id:
+              result.exam_id,
             student_name:
               result.student_name,
-            score: analysis.score,
-            total: analysis.total,
+            score:
+              analysis.score,
+            total:
+              analysis.total,
             percentage:
               analysis.percentage,
+
             correct_count:
               analysis.correct_count,
+
             wrong_count:
               analysis.wrong_count,
+
             unanswered_count:
               analysis.unanswered_count,
+
             created_at:
               result.created_at,
+
             details:
               analysis.details
           };
@@ -615,7 +601,9 @@ app.get(
         results:
           detailedResults
       });
+
     } catch (error) {
+
       res.status(500).json({
         error: error.message
       });
@@ -623,11 +611,114 @@ app.get(
   }
 );
 
-/* DELETE QUESTION */
+/* =========================
+   SINGLE RESULT
+   BARSIISAAF QOFA
+========================= */
+
+app.get(
+  "/api/results/:resultId",
+  async (req, res) => {
+    try {
+
+      const {
+        data: result,
+        error
+      } = await supabase
+        .from("results")
+        .select("*")
+        .eq(
+          "id",
+          req.params.resultId
+        )
+        .single();
+
+      if (error || !result) {
+        return res.status(404).json({
+          error:
+            "Bu'aan hin argamne."
+        });
+      }
+
+      const {
+        data: questions,
+        error: questionError
+      } = await supabase
+        .from("questions")
+        .select("*")
+        .eq(
+          "exam_id",
+          result.exam_id
+        )
+        .order(
+          "created_at",
+          {
+            ascending: true
+          }
+        );
+
+      if (questionError) {
+        return res.status(500).json({
+          error:
+            questionError.message
+        });
+      }
+
+      const analysis =
+        analyzeAnswers(
+          questions,
+          result.answers || {}
+        );
+
+      res.json({
+        result: {
+          id: result.id,
+          exam_id:
+            result.exam_id,
+          student_name:
+            result.student_name,
+          score:
+            analysis.score,
+          total:
+            analysis.total,
+          percentage:
+            analysis.percentage,
+
+          correct_count:
+            analysis.correct_count,
+
+          wrong_count:
+            analysis.wrong_count,
+
+          unanswered_count:
+            analysis.unanswered_count,
+
+          created_at:
+            result.created_at
+        },
+
+        details:
+          analysis.details
+      });
+
+    } catch (error) {
+
+      res.status(500).json({
+        error: error.message
+      });
+    }
+  }
+);
+
+/* =========================
+   DELETE QUESTION
+========================= */
+
 app.delete(
   "/api/questions/:id",
   async (req, res) => {
     try {
+
       const { error } =
         await supabase
           .from("questions")
@@ -646,13 +737,19 @@ app.delete(
       res.json({
         success: true
       });
+
     } catch (error) {
+
       res.status(500).json({
         error: error.message
       });
     }
   }
 );
+
+/* =========================
+   SERVER
+========================= */
 
 app.listen(
   PORT,
