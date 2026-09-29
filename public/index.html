@@ -328,7 +328,7 @@ button{
 
 <div class="welcome">
 <h2>Baga Nagaan Dhuftan</h2>
-<p>Gara Sirna Qormaataa Hidaayatul-Bayaan.</p>
+<p> Gara Sirna Qormaataa Hidaayatul-Bayaan.</p>
 </div>
 
 <div class="menu">
@@ -380,7 +380,7 @@ button{
 
 <div class="field">
 <label>Mata-duree Qormaataa</label>
-<input id="examTitle" placeholder="Fakkeenya: Aqiidaa">
+<input id="examTitle" placeholder="Fakkeenya: Herrega">
 </div>
 
 <div class="field">
@@ -390,7 +390,7 @@ button{
 
 <div class="field">
 <label>Kilaasa</label>
-<input id="examGrade" placeholder="">
+<input id="examGrade" placeholder="Fakkeenya: Kilaasa 10">
 </div>
 
 <div class="field">
@@ -517,9 +517,7 @@ Dhugaa / Soba
 
 <section id="takePage" class="hidden">
 
-<div class="panel">
-
-<button class="back" onclick="goHome()">← Duuba</button>
+<div>
 
 <h2 class="title">📖 Qormaata Fudhachuu</h2>
 
@@ -542,7 +540,7 @@ Dhugaa / Soba
 <div id="studentInfo" class="info"></div>
 
 <div class="field">
-<label>Maqaakee Barreessi</label>
+<label>Maqaa Barataa</label>
 <input id="studentName">
 </div>
 
@@ -568,10 +566,11 @@ Barataa:
 
 <p id="studentScoreText" style="text-align:center"></p>
 
+<div id="resultMessage" class="success"></div>
+
 </div>
 
 </section>
-
 
 <!-- MY EXAM -->
 
@@ -1301,7 +1300,7 @@ async function submitExam(){
  .value.trim();
 
  if(!studentName){
-  alert("Maqaa barataa galchi.");
+  alert("Maqaakeegalchi.");
   return;
  }
 
@@ -1676,4 +1675,4 @@ document.addEventListener(
 </script>
 
 </body>
-  </html>
+ </html>
