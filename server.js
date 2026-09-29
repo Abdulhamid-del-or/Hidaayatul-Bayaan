@@ -4,7 +4,6 @@ const crypto = require("crypto");
 const { createClient } = require("@supabase/supabase-js");
 
 const app = express();
-
 const PORT = process.env.PORT || 10000;
 
 const SUPABASE_URL = process.env.SUPABASE_URL;
@@ -25,7 +24,6 @@ const supabase = createClient(
 
 app.use(express.json({ limit: "2mb" }));
 app.use(express.urlencoded({ extended: true }));
-
 app.use(express.static(path.join(__dirname, "public")));
 
 function makeCode(length = 8) {
@@ -44,13 +42,95 @@ function cleanQuestion(question) {
     option_a: question.option_a,
     option_b: question.option_b,
     option_c: question.option_c,
-    option_d: question.option_d
+    option_d: question.option_d,
+    points: Number(question.points || 1)
+  };
+}
+
+/*
+  Deebii barataa fi deebii sirrii wal bira qabsiisa.
+*/
+function analyzeAnswers(questions, answers) {
+  const answerMap = answers || {};
+
+  let correctCount = 0;
+  let wrongCount = 0;
+  let unansweredCount = 0;
+
+  let score = 0;
+  let total = 0;
+
+  const details = questions.map((q, index) => {
+    const points = Number(q.points || 1);
+
+    total += points;
+
+    const studentAnswer =
+      answerMap[q.id] !== undefined &&
+      answerMap[q.id] !== null
+        ? String(answerMap[q.id]).trim()
+        : "";
+
+    const correctAnswer =
+      q.correct_answer !== undefined &&
+      q.correct_answer !== null
+        ? String(q.correct_answer).trim()
+        : "";
+
+    let status = "unanswered";
+
+    if (!studentAnswer) {
+      unansweredCount++;
+      status = "unanswered";
+    } else if (
+      studentAnswer.toLowerCase() ===
+      correctAnswer.toLowerCase()
+    ) {
+      correctCount++;
+      score += points;
+      status = "correct";
+    } else {
+      wrongCount++;
+      status = "wrong";
+    }
+
+    return {
+      number: index + 1,
+      question_id: q.id,
+      question: q.question,
+      type: q.type,
+      option_a: q.option_a || "",
+      option_b: q.option_b || "",
+      option_c: q.option_c || "",
+      option_d: q.option_d || "",
+      student_answer: studentAnswer,
+      correct_answer: correctAnswer,
+      points,
+      status
+    };
+  });
+
+  const percentage =
+    total > 0
+      ? Math.round((score / total) * 100)
+      : 0;
+
+  return {
+    score,
+    total,
+    percentage,
+    correct_count: correctCount,
+    wrong_count: wrongCount,
+    unanswered_count: unansweredCount,
+    details
   };
 }
 
 /* HOME */
 app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "index.html"));
+  res.sendFile(
+    path.join(__dirname, "public", "index.html")
+  );
 });
 
 /* HEALTH */
@@ -94,7 +174,8 @@ app.post("/api/exams", async (req, res) => {
 
     if (!teacher_name || !title) {
       return res.status(400).json({
-        error: "Maqaa barsiisaa fi maqaa qormaataa guuti."
+        error:
+          "Maqaa barsiisaa fi maqaa qormaataa guuti."
       });
     }
 
@@ -131,277 +212,454 @@ app.post("/api/exams", async (req, res) => {
 });
 
 /* ADD QUESTION */
-app.post("/api/exams/:id/questions", async (req, res) => {
-  try {
-    const examId = req.params.id;
+app.post(
+  "/api/exams/:id/questions",
+  async (req, res) => {
+    try {
+      const examId = req.params.id;
 
-    const {
-      question,
-      type,
-      option_a,
-      option_b,
-      option_c,
-      option_d,
-      correct_answer,
-      points
-    } = req.body;
-
-    if (!question || !correct_answer) {
-      return res.status(400).json({
-        error: "Gaaffii fi deebii sirrii guuti."
-      });
-    }
-
-    const { data: exam } = await supabase
-      .from("exams")
-      .select("id")
-      .eq("id", examId)
-      .single();
-
-    if (!exam) {
-      return res.status(404).json({
-        error: "Qormaanni hin argamne."
-      });
-    }
-
-    const { data, error } = await supabase
-      .from("questions")
-      .insert({
-        exam_id: examId,
+      const {
         question,
-        type: type || "multiple",
-        option_a: option_a || "",
-        option_b: option_b || "",
-        option_c: option_c || "",
-        option_d: option_d || "",
+        type,
+        option_a,
+        option_b,
+        option_c,
+        option_d,
         correct_answer,
-        points: Number(points) || 1
-      })
-      .select()
-      .single();
+        points
+      } = req.body;
 
-    if (error) {
-      return res.status(500).json({
+      if (!question || !correct_answer) {
+        return res.status(400).json({
+          error: "Gaaffii fi deebii sirrii guuti."
+        });
+      }
+
+      const { data: exam } = await supabase
+        .from("exams")
+        .select("id")
+        .eq("id", examId)
+        .single();
+
+      if (!exam) {
+        return res.status(404).json({
+          error: "Qormaanni hin argamne."
+        });
+      }
+
+      const { data, error } = await supabase
+        .from("questions")
+        .insert({
+          exam_id: examId,
+          question,
+          type: type || "multiple",
+          option_a: option_a || "",
+          option_b: option_b || "",
+          option_c: option_c || "",
+          option_d: option_d || "",
+          correct_answer,
+          points: Number(points) || 1
+        })
+        .select()
+        .single();
+
+      if (error) {
+        return res.status(500).json({
+          error: error.message
+        });
+      }
+
+      res.json({
+        success: true,
+        question: data
+      });
+    } catch (error) {
+      res.status(500).json({
         error: error.message
       });
     }
-
-    res.json({
-      success: true,
-      question: data
-    });
-  } catch (error) {
-    res.status(500).json({
-      error: error.message
-    });
   }
-});
+);
 
 /* GET EXAM BY CODE */
-app.get("/api/exams/code/:code", async (req, res) => {
-  try {
-    const code = req.params.code.toUpperCase();
+app.get(
+  "/api/exams/code/:code",
+  async (req, res) => {
+    try {
+      const code =
+        req.params.code.toUpperCase();
 
-    const { data: exam, error } = await supabase
-      .from("exams")
-      .select("*")
-      .eq("exam_code", code)
-      .single();
+      const { data: exam, error } =
+        await supabase
+          .from("exams")
+          .select("*")
+          .eq("exam_code", code)
+          .single();
 
-    if (error || !exam) {
-      return res.status(404).json({
-        error: "Qormaata kana hin arganne."
+      if (error || !exam) {
+        return res.status(404).json({
+          error:
+            "Qormaata kana hin arganne."
+        });
+      }
+
+      const {
+        data: questions,
+        error: qError
+      } = await supabase
+        .from("questions")
+        .select("*")
+        .eq("exam_id", exam.id)
+        .order("created_at", {
+          ascending: true
+        });
+
+      if (qError) {
+        return res.status(500).json({
+          error: qError.message
+        });
+      }
+
+      res.json({
+        exam: {
+          id: exam.id,
+          title: exam.title,
+          subject: exam.subject,
+          grade: exam.grade,
+          duration: exam.duration,
+          exam_code: exam.exam_code,
+          teacher_name: exam.teacher_name
+        },
+        questions:
+          questions.map(cleanQuestion)
+      });
+    } catch (error) {
+      res.status(500).json({
+        error: error.message
       });
     }
-
-    const { data: questions, error: qError } = await supabase
-      .from("questions")
-      .select("*")
-      .eq("exam_id", exam.id)
-      .order("created_at", { ascending: true });
-
-    if (qError) {
-      return res.status(500).json({
-        error: qError.message
-      });
-    }
-
-    res.json({
-      exam: {
-        id: exam.id,
-        title: exam.title,
-        subject: exam.subject,
-        grade: exam.grade,
-        duration: exam.duration,
-        exam_code: exam.exam_code,
-        teacher_name: exam.teacher_name
-      },
-      questions: questions.map(cleanQuestion)
-    });
-  } catch (error) {
-    res.status(500).json({
-      error: error.message
-    });
   }
-});
+);
 
 /* SUBMIT EXAM */
-app.post("/api/exams/:id/submit", async (req, res) => {
-  try {
-    const examId = req.params.id;
+app.post(
+  "/api/exams/:id/submit",
+  async (req, res) => {
+    try {
+      const examId = req.params.id;
 
-    const {
-      student_name,
-      answers
-    } = req.body;
+      const {
+        student_name,
+        answers
+      } = req.body;
 
-    if (!student_name) {
-      return res.status(400).json({
-        error: "Maqaa barataa galchi."
-      });
-    }
-
-    const { data: exam, error: examError } = await supabase
-      .from("exams")
-      .select("*")
-      .eq("id", examId)
-      .single();
-
-    if (examError || !exam) {
-      return res.status(404).json({
-        error: "Qormaata hin argamne."
-      });
-    }
-
-    const { data: questions, error: qError } = await supabase
-      .from("questions")
-      .select("*")
-      .eq("exam_id", examId);
-
-    if (qError) {
-      return res.status(500).json({
-        error: qError.message
-      });
-    }
-
-    let score = 0;
-    let total = 0;
-
-    for (const q of questions) {
-      total += Number(q.points || 1);
-
-      const userAnswer =
-        answers && answers[q.id]
-          ? String(answers[q.id]).trim().toLowerCase()
-          : "";
-
-      const correct =
-        String(q.correct_answer)
-          .trim()
-          .toLowerCase();
-
-      if (userAnswer === correct) {
-        score += Number(q.points || 1);
+      if (!student_name) {
+        return res.status(400).json({
+          error:
+            "Maqaa barataa galchi."
+        });
       }
-    }
 
-    const percentage =
-      total > 0
-        ? Math.round((score / total) * 100)
-        : 0;
+      const {
+        data: exam,
+        error: examError
+      } = await supabase
+        .from("exams")
+        .select("*")
+        .eq("id", examId)
+        .single();
 
-    const { data: result, error: resultError } =
-      await supabase
+      if (examError || !exam) {
+        return res.status(404).json({
+          error:
+            "Qormaata hin argamne."
+        });
+      }
+
+      const {
+        data: questions,
+        error: qError
+      } = await supabase
+        .from("questions")
+        .select("*")
+        .eq("exam_id", examId)
+        .order("created_at", {
+          ascending: true
+        });
+
+      if (qError) {
+        return res.status(500).json({
+          error: qError.message
+        });
+      }
+
+      const analysis =
+        analyzeAnswers(
+          questions,
+          answers
+        );
+
+      const {
+        data: result,
+        error: resultError
+      } = await supabase
         .from("results")
         .insert({
           exam_id: examId,
           student_name,
-          score,
-          total,
-          percentage,
+          score: analysis.score,
+          total: analysis.total,
+          percentage:
+            analysis.percentage,
           answers: answers || {}
         })
         .select()
         .single();
 
-    if (resultError) {
-      return res.status(500).json({
-        error: resultError.message
-      });
-    }
-
-    res.json({
-      success: true,
-      result: {
-        id: result.id,
-        student_name,
-        score,
-        total,
-        percentage
+      if (resultError) {
+        return res.status(500).json({
+          error:
+            resultError.message
+        });
       }
-    });
-  } catch (error) {
-    res.status(500).json({
-      error: error.message
-    });
-  }
-});
 
-/* RESULTS */
-app.get("/api/exams/:id/results", async (req, res) => {
-  try {
-    const { data, error } = await supabase
-      .from("results")
-      .select(
-        "id, student_name, score, total, percentage, created_at"
-      )
-      .eq("exam_id", req.params.id)
-      .order("created_at", {
-        ascending: false
+      res.json({
+        success: true,
+        result: {
+          id: result.id,
+          student_name,
+          score: analysis.score,
+          total: analysis.total,
+          percentage:
+            analysis.percentage,
+          correct_count:
+            analysis.correct_count,
+          wrong_count:
+            analysis.wrong_count,
+          unanswered_count:
+            analysis.unanswered_count,
+          details: analysis.details
+        }
       });
+    } catch (error) {
+      console.error(
+        "SUBMIT ERROR:",
+        error
+      );
 
-    if (error) {
-      return res.status(500).json({
+      res.status(500).json({
         error: error.message
       });
     }
-
-    res.json({
-      results: data
-    });
-  } catch (error) {
-    res.status(500).json({
-      error: error.message
-    });
   }
-});
+);
+
+/*
+  BU'AA BARATAA TOKKO
+*/
+app.get(
+  "/api/results/:resultId",
+  async (req, res) => {
+    try {
+      const { data: result, error } =
+        await supabase
+          .from("results")
+          .select("*")
+          .eq(
+            "id",
+            req.params.resultId
+          )
+          .single();
+
+      if (error || !result) {
+        return res.status(404).json({
+          error:
+            "Bu'aan hin argamne."
+        });
+      }
+
+      const {
+        data: questions,
+        error: qError
+      } = await supabase
+        .from("questions")
+        .select("*")
+        .eq(
+          "exam_id",
+          result.exam_id
+        )
+        .order("created_at", {
+          ascending: true
+        });
+
+      if (qError) {
+        return res.status(500).json({
+          error: qError.message
+        });
+      }
+
+      const analysis =
+        analyzeAnswers(
+          questions,
+          result.answers || {}
+        );
+
+      res.json({
+        result: {
+          id: result.id,
+          exam_id: result.exam_id,
+          student_name:
+            result.student_name,
+          score: analysis.score,
+          total: analysis.total,
+          percentage:
+            analysis.percentage,
+          correct_count:
+            analysis.correct_count,
+          wrong_count:
+            analysis.wrong_count,
+          unanswered_count:
+            analysis.unanswered_count,
+          created_at:
+            result.created_at
+        },
+        details:
+          analysis.details
+      });
+    } catch (error) {
+      res.status(500).json({
+        error: error.message
+      });
+    }
+  }
+);
+
+/*
+  BARSIISAAF:
+  BU'AA BARATTOOTA HUNDAA
+*/
+app.get(
+  "/api/exams/:id/results",
+  async (req, res) => {
+    try {
+      const examId =
+        req.params.id;
+
+      const {
+        data: results,
+        error
+      } = await supabase
+        .from("results")
+        .select(
+          "id, exam_id, student_name, score, total, percentage, answers, created_at"
+        )
+        .eq("exam_id", examId)
+        .order("created_at", {
+          ascending: false
+        });
+
+      if (error) {
+        return res.status(500).json({
+          error: error.message
+        });
+      }
+
+      const {
+        data: questions,
+        error: qError
+      } = await supabase
+        .from("questions")
+        .select("*")
+        .eq("exam_id", examId)
+        .order("created_at", {
+          ascending: true
+        });
+
+      if (qError) {
+        return res.status(500).json({
+          error: qError.message
+        });
+      }
+
+      const detailedResults =
+        results.map((result) => {
+          const analysis =
+            analyzeAnswers(
+              questions,
+              result.answers || {}
+            );
+
+          return {
+            id: result.id,
+            exam_id: result.exam_id,
+            student_name:
+              result.student_name,
+            score: analysis.score,
+            total: analysis.total,
+            percentage:
+              analysis.percentage,
+            correct_count:
+              analysis.correct_count,
+            wrong_count:
+              analysis.wrong_count,
+            unanswered_count:
+              analysis.unanswered_count,
+            created_at:
+              result.created_at,
+            details:
+              analysis.details
+          };
+        });
+
+      res.json({
+        results:
+          detailedResults
+      });
+    } catch (error) {
+      res.status(500).json({
+        error: error.message
+      });
+    }
+  }
+);
 
 /* DELETE QUESTION */
-app.delete("/api/questions/:id", async (req, res) => {
-  try {
-    const { error } = await supabase
-      .from("questions")
-      .delete()
-      .eq("id", req.params.id);
+app.delete(
+  "/api/questions/:id",
+  async (req, res) => {
+    try {
+      const { error } =
+        await supabase
+          .from("questions")
+          .delete()
+          .eq(
+            "id",
+            req.params.id
+          );
 
-    if (error) {
-      return res.status(500).json({
+      if (error) {
+        return res.status(500).json({
+          error: error.message
+        });
+      }
+
+      res.json({
+        success: true
+      });
+    } catch (error) {
+      res.status(500).json({
         error: error.message
       });
     }
-
-    res.json({
-      success: true
-    });
-  } catch (error) {
-    res.status(500).json({
-      error: error.message
-    });
   }
-});
+);
 
-app.listen(PORT, "0.0.0.0", () => {
-  console.log(
-    `✅ Hidaayatul-Bayaan server running on port ${PORT}`
-  );
-});
+app.listen(
+  PORT,
+  "0.0.0.0",
+  () => {
+    console.log(
+      `✅ Hidaayatul-Bayaan server running on port ${PORT}`
+    );
+  }
+);
