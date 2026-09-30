@@ -604,13 +604,44 @@ app.delete("/api/questions/:id", async (req, res) => {
     });
   }
 });
-
 /* =========================
-   SERVER
+   START SERVER
 ========================= */
 
-app.listen(PORT, "0.0.0.0", () => {
-  console.log(
-    `✅ Hidaayatul-Bayaan server running on port ${PORT}`
-  );
-});
+server.listen(
+  PORT,
+  "0.0.0.0",
+  async () => {
+    console.log(
+      `✅ Mullisa-JM server running on port ${PORT}`
+    );
+
+    try {
+      console.log(
+        "🔄 Database initialization jalqabame..."
+      );
+
+      const connected =
+        await testDatabase();
+
+      if (!connected) {
+        console.error(
+          "❌ Database connection failed."
+        );
+
+        return;
+      }
+
+      await initDatabase();
+
+      console.log(
+        "✅ Database initialization completed."
+      );
+    } catch (error) {
+      console.error(
+        "❌ Database initialization error:",
+        error.message
+      );
+    }
+  }
+);
