@@ -1,7 +1,7 @@
 {
   "name": "hidaayatul-bayaan",
   "version": "1.0.0",
-  "description": "Hidaayatul-Bayaan - Chat, Call, Video, Rooms and Learning App",
+  "description": "Hidaayatul-Bayaan - Sirna Qormaataa Barattootaa",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
@@ -10,6 +10,7 @@
     "node": ">=20"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.57.4",
     "bcryptjs": "^2.4.3",
     "express": "^4.21.2",
     "jsonwebtoken": "^9.0.2",
