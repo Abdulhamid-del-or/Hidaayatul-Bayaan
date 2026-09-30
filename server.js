@@ -1,9 +1,19 @@
 const express = require("express");
+const http = require("http");
 const path = require("path");
-const crypto = require("crypto");
+const { Server } = require("socket.io");
 const { createClient } = require("@supabase/supabase-js");
 
 const app = express();
+const server = http.createServer(app);
+
+const io = new Server(server, {
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST"]
+  }
+});
+
 const PORT = process.env.PORT || 10000;
 
 const SUPABASE_URL = process.env.SUPABASE_URL;
@@ -11,7 +21,7 @@ const SUPABASE_SERVICE_ROLE_KEY =
   process.env.SUPABASE_SERVICE_ROLE_KEY;
 
 if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
-  console.error("❌ Supabase environment variables hin argamne.");
+  console.error("❌ SUPABASE_URL ykn SUPABASE_SERVICE_ROLE_KEY hin argamne.");
   process.exit(1);
 }
 
@@ -20,628 +30,820 @@ const supabase = createClient(
   SUPABASE_SERVICE_ROLE_KEY
 );
 
-app.use(express.json({ limit: "5mb" }));
+app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "public")));
 
-function makeCode(length = 8) {
-  return crypto
-    .randomBytes(10)
-    .toString("hex")
-    .slice(0, length)
-    .toUpperCase();
-}
 
-/* =========================
-   HOME
-========================= */
+// ======================================
+// HOME
+// ======================================
 
 app.get("/", (req, res) => {
-  res.sendFile(
-    path.join(__dirname, "public", "index.html")
-  );
+  res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
-/* =========================
-   HEALTH
-========================= */
+
+// ======================================
+// HEALTH
+// ======================================
 
 app.get("/api/health", async (req, res) => {
+
+  const { error } = await supabase
+    .from("users")
+    .select("id")
+    .limit(1);
+
+  res.json({
+    success: !error,
+    app: "Mullisa-JM",
+    database: error ? "error" : "connected",
+    time: new Date().toISOString()
+  });
+});
+
+
+// ======================================
+// REGISTER / LOGIN
+// ======================================
+
+app.post("/api/login", async (req, res) => {
+
   try {
-    const { error } = await supabase
-      .from("exams")
-      .select("id")
-      .limit(1);
+
+    const username = String(
+      req.body.username || ""
+    ).trim();
+
+    if (!username) {
+      return res.status(400).json({
+        success: false,
+        message: "Maqaa galchi."
+      });
+    }
+
+    let { data: user, error } = await supabase
+      .from("users")
+      .select("*")
+      .eq("username", username)
+      .maybeSingle();
 
     if (error) {
-      return res.status(500).json({
-        ok: false,
-        error: error.message
-      });
+      throw error;
+    }
+
+    if (!user) {
+
+      const { data: newUser, error: insertError } =
+        await supabase
+          .from("users")
+          .insert({
+            username: username,
+            online: true
+          })
+          .select()
+          .single();
+
+      if (insertError) {
+        throw insertError;
+      }
+
+      user = newUser;
+
+    } else {
+
+      const { data: updatedUser, error: updateError } =
+        await supabase
+          .from("users")
+          .update({
+            online: true
+          })
+          .eq("id", user.id)
+          .select()
+          .single();
+
+      if (!updateError && updatedUser) {
+        user = updatedUser;
+      }
+
     }
 
     res.json({
-      ok: true,
-      app: "Hidaayatul-Bayaan",
-      database: "Supabase connected"
+      success: true,
+      user
     });
+
   } catch (error) {
+
+    console.error("LOGIN ERROR:", error);
+
     res.status(500).json({
-      ok: false,
-      error: error.message
+      success: false,
+      message: "Login irratti rakkoon uumame."
     });
+
   }
+
 });
 
-/* =========================
-   CREATE EXAM
-========================= */
 
-app.post("/api/exams", async (req, res) => {
+// ======================================
+// USERS
+// ======================================
+
+app.get("/api/users", async (req, res) => {
+
+  const { data, error } = await supabase
+    .from("users")
+    .select("*")
+    .order("username");
+
+  if (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+
+  res.json({
+    success: true,
+    users: data
+  });
+
+});
+
+
+// ======================================
+// CREATE CLASS
+// ======================================
+
+app.post("/api/classes", async (req, res) => {
+
   try {
-    const {
-      teacher_name,
-      title,
-      subject,
-      grade,
-      duration
-    } = req.body;
 
-    if (!teacher_name || !title) {
-      return res.status(400).json({
-        error: "Maqaa barsiisaa fi maqaa qormaataa guuti."
-      });
-    }
+    const ownerName =
+      String(req.body.ownerName || "Host").trim();
 
-    let exam = null;
-    let lastError = null;
+    const name =
+      String(
+        req.body.name ||
+        "Mullisa-JM Kilaasii"
+      ).trim();
 
-    for (let i = 0; i < 5; i++) {
-      const exam_code = makeCode();
+    const classId =
+      "CLS-" +
+      Math.random()
+        .toString(36)
+        .substring(2, 8)
+        .toUpperCase();
 
-      const result = await supabase
-        .from("exams")
+    const { data: classroom, error } =
+      await supabase
+        .from("classes")
         .insert({
-          teacher_name,
-          title,
-          subject: subject || "",
-          grade: grade || "",
-          duration: Number(duration) || 30,
-          exam_code
+          class_id: classId,
+          name: name,
+          owner_name: ownerName,
+          max_seats: 10
         })
         .select()
         .single();
 
-      if (!result.error) {
-        exam = result.data;
+    if (error) {
+      throw error;
+    }
+
+    const { error: seatError } =
+      await supabase
+        .from("class_seats")
+        .insert({
+          class_id: classroom.id,
+          seat_number: 1,
+          username: ownerName,
+          role: "host"
+        });
+
+    if (seatError) {
+      throw seatError;
+    }
+
+    res.json({
+      success: true,
+      class: classroom
+    });
+
+  } catch (error) {
+
+    console.error("CREATE CLASS ERROR:", error);
+
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+
+  }
+
+});
+
+
+// ======================================
+// GET CLASSES
+// ======================================
+
+app.get("/api/classes", async (req, res) => {
+
+  const { data, error } = await supabase
+    .from("classes")
+    .select(`
+      *,
+      class_seats (*)
+    `)
+    .order("created_at", {
+      ascending: false
+    });
+
+  if (error) {
+
+    return res.status(500).json({
+      success: false,
+      message: error.message
+    });
+
+  }
+
+  res.json({
+    success: true,
+    classes: data
+  });
+
+});
+
+
+// ======================================
+// GET ONE CLASS
+// ======================================
+
+app.get("/api/classes/:id", async (req, res) => {
+
+  const { data, error } = await supabase
+    .from("classes")
+    .select(`
+      *,
+      class_seats (*)
+    `)
+    .eq("class_id", req.params.id)
+    .single();
+
+  if (error) {
+
+    return res.status(404).json({
+      success: false,
+      message: "Kilaasiin hin argamne."
+    });
+
+  }
+
+  res.json({
+    success: true,
+    class: data
+  });
+
+});
+
+
+// ======================================
+// JOIN CLASS
+// ======================================
+
+app.post("/api/classes/:id/join", async (req, res) => {
+
+  try {
+
+    const username =
+      String(req.body.username || "").trim();
+
+    if (!username) {
+      return res.status(400).json({
+        success: false,
+        message: "Maqaa galchi."
+      });
+    }
+
+    const { data: classroom, error } =
+      await supabase
+        .from("classes")
+        .select("*")
+        .eq("class_id", req.params.id)
+        .single();
+
+    if (error || !classroom) {
+      return res.status(404).json({
+        success: false,
+        message: "Kilaasiin hin argamne."
+      });
+    }
+
+
+    // Check existing seat
+    const { data: existingSeat } =
+      await supabase
+        .from("class_seats")
+        .select("*")
+        .eq("class_id", classroom.id)
+        .eq("username", username)
+        .maybeSingle();
+
+    if (existingSeat) {
+
+      return res.json({
+        success: true,
+        type: "seat",
+        seat: existingSeat.seat_number
+      });
+
+    }
+
+
+    // Get seats
+    const { data: seats } =
+      await supabase
+        .from("class_seats")
+        .select("*")
+        .eq("class_id", classroom.id)
+        .order("seat_number");
+
+
+    // Find free seat
+    let freeSeat = null;
+
+    for (let i = 1; i <= 10; i++) {
+
+      const used =
+        seats.some(
+          seat => seat.seat_number === i
+        );
+
+      if (!used) {
+        freeSeat = i;
         break;
       }
 
-      lastError = result.error;
     }
 
-    if (!exam) {
-      return res.status(500).json({
-        error:
-          lastError?.message ||
-          "Qormaata uumuu hin dandeenye."
-      });
-    }
 
-    res.json({
-      success: true,
-      exam
-    });
-  } catch (error) {
-    console.error(error);
+    // Seat available
+    if (freeSeat) {
 
-    res.status(500).json({
-      error: error.message
-    });
-  }
-});
-
-/* =========================
-   ADD QUESTION
-========================= */
-
-app.post("/api/exams/:id/questions", async (req, res) => {
-  try {
-    const examId = req.params.id;
-
-    const {
-      question,
-      type,
-      option_a,
-      option_b,
-      option_c,
-      option_d,
-      correct_answer,
-      points
-    } = req.body;
-
-    if (!question || !correct_answer) {
-      return res.status(400).json({
-        error: "Gaaffii fi deebii sirrii guuti."
-      });
-    }
-
-    const {
-      data: exam,
-      error: examError
-    } = await supabase
-      .from("exams")
-      .select("id")
-      .eq("id", examId)
-      .single();
-
-    if (examError || !exam) {
-      return res.status(404).json({
-        error: "Qormaanni hin argamne."
-      });
-    }
-
-    const {
-      data,
-      error
-    } = await supabase
-      .from("questions")
-      .insert({
-        exam_id: examId,
-        question,
-        type: type || "multiple",
-        option_a: option_a || "",
-        option_b: option_b || "",
-        option_c: option_c || "",
-        option_d: option_d || "",
-        correct_answer,
-        points: Number(points) || 1
-      })
-      .select()
-      .single();
-
-    if (error) {
-      return res.status(500).json({
-        error: error.message
-      });
-    }
-
-    res.json({
-      success: true,
-      question: data
-    });
-  } catch (error) {
-    res.status(500).json({
-      error: error.message
-    });
-  }
-});
-
-/* =========================
-   GET EXAM BY CODE
-   Correct answer hin ergisiisu
-========================= */
-
-app.get("/api/exams/code/:code", async (req, res) => {
-  try {
-    const code =
-      req.params.code.trim().toUpperCase();
-
-    const {
-      data: exam,
-      error: examError
-    } = await supabase
-      .from("exams")
-      .select("*")
-      .eq("exam_code", code)
-      .single();
-
-    if (examError || !exam) {
-      return res.status(404).json({
-        error: "Qormaata kana hin arganne."
-      });
-    }
-
-    const {
-      data: questions,
-      error: qError
-    } = await supabase
-      .from("questions")
-      .select(
-        "id,question,type,option_a,option_b,option_c,option_d,points"
-      )
-      .eq("exam_id", exam.id)
-      .order("created_at", {
-        ascending: true
-      });
-
-    if (qError) {
-      return res.status(500).json({
-        error: qError.message
-      });
-    }
-
-    res.json({
-      exam: {
-        id: exam.id,
-        title: exam.title,
-        subject: exam.subject,
-        grade: exam.grade,
-        duration: exam.duration,
-        exam_code: exam.exam_code,
-        teacher_name: exam.teacher_name
-      },
-      questions: questions || []
-    });
-  } catch (error) {
-    res.status(500).json({
-      error: error.message
-    });
-  }
-});
-
-/* =========================
-   QUESTIONS
-========================= */
-
-app.get("/api/exams/:id/questions", async (req, res) => {
-  try {
-    const {
-      data,
-      error
-    } = await supabase
-      .from("questions")
-      .select("*")
-      .eq("exam_id", req.params.id)
-      .order("created_at", {
-        ascending: true
-      });
-
-    if (error) {
-      return res.status(500).json({
-        error: error.message
-      });
-    }
-
-    res.json({
-      questions: data || []
-    });
-  } catch (error) {
-    res.status(500).json({
-      error: error.message
-    });
-  }
-});
-
-/* =========================
-   SUBMIT EXAM
-========================= */
-
-app.post("/api/exams/:id/submit", async (req, res) => {
-  try {
-    const examId = req.params.id;
-
-    const {
-      student_name,
-      answers
-    } = req.body;
-
-    if (!student_name) {
-      return res.status(400).json({
-        error: "Maqaa barataa galchi."
-      });
-    }
-
-    const {
-      data: exam,
-      error: examError
-    } = await supabase
-      .from("exams")
-      .select("*")
-      .eq("id", examId)
-      .single();
-
-    if (examError || !exam) {
-      return res.status(404).json({
-        error: "Qormaata hin argamne."
-      });
-    }
-
-    const {
-      data: questions,
-      error: qError
-    } = await supabase
-      .from("questions")
-      .select("*")
-      .eq("exam_id", examId)
-      .order("created_at", {
-        ascending: true
-      });
-
-    if (qError) {
-      return res.status(500).json({
-        error: qError.message
-      });
-    }
-
-    let score = 0;
-    let total = 0;
-
-    for (const q of questions) {
-      const points = Number(q.points || 1);
-
-      total += points;
-
-      const userAnswer =
-        answers && answers[q.id]
-          ? String(answers[q.id])
-              .trim()
-              .toLowerCase()
-          : "";
-
-      const correctAnswer =
-        String(q.correct_answer || "")
-          .trim()
-          .toLowerCase();
-
-      if (
-        userAnswer &&
-        userAnswer === correctAnswer
-      ) {
-        score += points;
-      }
-    }
-
-    const percentage =
-      total > 0
-        ? Math.round((score / total) * 100)
-        : 0;
-
-    const {
-      data: result,
-      error: resultError
-    } = await supabase
-      .from("results")
-      .insert({
-        exam_id: examId,
-        student_name,
-        score,
-        total,
-        percentage,
-        answers: answers || {}
-      })
-      .select()
-      .single();
-
-    if (resultError) {
-      return res.status(500).json({
-        error: resultError.message
-      });
-    }
-
-    res.json({
-      success: true,
-      result: {
-        id: result.id,
-        student_name,
-        score,
-        total,
-        percentage
-      }
-    });
-  } catch (error) {
-    console.error(error);
-
-    res.status(500).json({
-      error: error.message
-    });
-  }
-});
-
-/* =========================
-   TEACHER RESULTS
-========================= */
-
-app.get("/api/exams/:id/results", async (req, res) => {
-  try {
-    const examId = req.params.id;
-
-    const {
-      data: exam,
-      error: examError
-    } = await supabase
-      .from("exams")
-      .select(
-        "id,title,subject,grade,duration,exam_code,teacher_name"
-      )
-      .eq("id", examId)
-      .single();
-
-    if (examError || !exam) {
-      return res.status(404).json({
-        error: "Qormaata hin argamne."
-      });
-    }
-
-    const {
-      data: questions,
-      error: qError
-    } = await supabase
-      .from("questions")
-      .select("*")
-      .eq("exam_id", examId)
-      .order("created_at", {
-        ascending: true
-      });
-
-    if (qError) {
-      return res.status(500).json({
-        error: qError.message
-      });
-    }
-
-    const {
-      data: results,
-      error: rError
-    } = await supabase
-      .from("results")
-      .select("*")
-      .eq("exam_id", examId)
-      .order("created_at", {
-        ascending: false
-      });
-
-    if (rError) {
-      return res.status(500).json({
-        error: rError.message
-      });
-    }
-
-    const students =
-      (results || []).map((result) => {
-
-        const answers =
-          result.answers || {};
-
-        let correctCount = 0;
-        let wrongCount = 0;
-        let unansweredCount = 0;
-
-        const details =
-          (questions || []).map((q, index) => {
-
-            const studentAnswer =
-              answers[q.id] !== undefined
-                ? String(answers[q.id])
-                : "";
-
-            const correctAnswer =
-              String(q.correct_answer || "");
-
-            let status = "unanswered";
-
-            if (!studentAnswer.trim()) {
-              unansweredCount++;
-              status = "unanswered";
-            } else if (
-              studentAnswer
-                .trim()
-                .toLowerCase() ===
-              correctAnswer
-                .trim()
-                .toLowerCase()
-            ) {
-              correctCount++;
-              status = "correct";
-            } else {
-              wrongCount++;
-              status = "wrong";
-            }
-
-            return {
-              number: index + 1,
-              question: q.question,
-              student_answer: studentAnswer,
-              correct_answer: correctAnswer,
-              points: Number(q.points || 1),
-              status
-            };
+      const { error: seatError } =
+        await supabase
+          .from("class_seats")
+          .insert({
+            class_id: classroom.id,
+            seat_number: freeSeat,
+            username,
+            role: "student"
           });
 
-        return {
-          id: result.id,
-          student_name: result.student_name,
-          score: Number(result.score || 0),
-          total: Number(result.total || 0),
-          percentage: Number(result.percentage || 0),
-          created_at: result.created_at,
-          correct_count: correctCount,
-          wrong_count: wrongCount,
-          unanswered_count: unansweredCount,
-          details
-        };
+      if (seatError) {
+        throw seatError;
+      }
+
+      io.to(`class:${classroom.id}`)
+        .emit("classUpdated");
+
+      return res.json({
+        success: true,
+        type: "seat",
+        seat: freeSeat
       });
 
+    }
+
+
+    // No seat = audience
+    const { error: audienceError } =
+      await supabase
+        .from("class_audience")
+        .insert({
+          class_id: classroom.id,
+          username
+        });
+
+    if (audienceError) {
+      throw audienceError;
+    }
+
+    io.to(`class:${classroom.id}`)
+      .emit("classUpdated");
+
     res.json({
-      exam,
-      students
+      success: true,
+      type: "audience"
     });
 
   } catch (error) {
-    console.error(error);
+
+    console.error("JOIN CLASS ERROR:", error);
 
     res.status(500).json({
-      error: error.message
+      success: false,
+      message: error.message
     });
+
   }
+
 });
 
-/* =========================
-   DELETE QUESTION
-========================= */
 
-app.delete("/api/questions/:id", async (req, res) => {
+// ======================================
+// LEAVE CLASS
+// ======================================
+
+app.post("/api/classes/:id/leave", async (req, res) => {
+
   try {
-    const {
-      error
-    } = await supabase
-      .from("questions")
-      .delete()
-      .eq("id", req.params.id);
 
-    if (error) {
-      return res.status(500).json({
-        error: error.message
+    const username =
+      String(req.body.username || "").trim();
+
+    const { data: classroom } =
+      await supabase
+        .from("classes")
+        .select("id")
+        .eq("class_id", req.params.id)
+        .single();
+
+    if (!classroom) {
+      return res.status(404).json({
+        success: false,
+        message: "Kilaasiin hin argamne."
       });
     }
+
+
+    await supabase
+      .from("class_seats")
+      .delete()
+      .eq("class_id", classroom.id)
+      .eq("username", username);
+
+
+    await supabase
+      .from("class_audience")
+      .delete()
+      .eq("class_id", classroom.id)
+      .eq("username", username);
+
+
+    io.to(`class:${classroom.id}`)
+      .emit("classUpdated");
 
     res.json({
       success: true
     });
-  } catch (error) {
-    res.status(500).json({
-      error: error.message
-    });
-  }
-});
-/* =========================
-   START SERVER
-========================= */
 
-server.listen(
-  PORT,
-  "0.0.0.0",
-  async () => {
-    console.log(
-      `✅ Mullisa-JM server running on port ${PORT}`
+  } catch (error) {
+
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+
+  }
+
+});
+
+
+// ======================================
+// CREATE ROOM
+// ======================================
+
+app.post("/api/rooms", async (req, res) => {
+
+  try {
+
+    const roomId =
+      "ROOM-" +
+      Math.random()
+        .toString(36)
+        .substring(2, 8)
+        .toUpperCase();
+
+    const { data: room, error } =
+      await supabase
+        .from("rooms")
+        .insert({
+          room_id: roomId,
+          name:
+            req.body.name ||
+            "Mullisa-JM Room",
+          owner:
+            req.body.username ||
+            "Host"
+        })
+        .select()
+        .single();
+
+    if (error) {
+      throw error;
+    }
+
+    res.json({
+      success: true,
+      room
+    });
+
+  } catch (error) {
+
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+
+  }
+
+});
+
+
+// ======================================
+// GET ROOMS
+// ======================================
+
+app.get("/api/rooms", async (req, res) => {
+
+  const { data, error } =
+    await supabase
+      .from("rooms")
+      .select("*")
+      .order("created_at", {
+        ascending: false
+      });
+
+  if (error) {
+
+    return res.status(500).json({
+      success: false,
+      message: error.message
+    });
+
+  }
+
+  res.json({
+    success: true,
+    rooms: data
+  });
+
+});
+
+
+// ======================================
+// SOCKET.IO
+// ======================================
+
+io.on("connection", (socket) => {
+
+  console.log("🟢 Connected:", socket.id);
+
+
+  socket.on("userOnline", async (user) => {
+
+    if (!user || !user.username) return;
+
+    socket.username = user.username;
+
+    if (user.id) {
+
+      await supabase
+        .from("users")
+        .update({
+          online: true
+        })
+        .eq("id", user.id);
+
+    }
+
+    io.emit("usersUpdated");
+
+  });
+
+
+  // ====================================
+  // JOIN CLASS SOCKET
+  // ====================================
+
+  socket.on("joinClass", async (data) => {
+
+    if (!data || !data.classId) return;
+
+    const { data: classroom } =
+      await supabase
+        .from("classes")
+        .select("id")
+        .eq("class_id", data.classId)
+        .single();
+
+    if (!classroom) {
+
+      socket.emit("errorMessage", {
+        message: "Kilaasiin hin argamne."
+      });
+
+      return;
+    }
+
+    socket.join(`class:${classroom.id}`);
+
+    socket.classId = classroom.id;
+
+    socket.to(`class:${classroom.id}`)
+      .emit("userJoinedClass", {
+        username: data.username
+      });
+
+  });
+
+
+  // ====================================
+  // CLASS CHAT
+  // ====================================
+
+  socket.on("classMessage", (message) => {
+
+    if (!socket.classId) return;
+
+    io.to(`class:${socket.classId}`)
+      .emit("classMessage", {
+        username:
+          socket.username || "User",
+        message,
+        time:
+          new Date().toISOString()
+      });
+
+  });
+
+
+  // ====================================
+  // PRIVATE CHAT
+  // ====================================
+
+  socket.on("privateMessage", (data) => {
+
+    if (!data || !data.to) return;
+
+    io.to(data.to)
+      .emit("privateMessage", {
+        from:
+          socket.username || "User",
+        message: data.message,
+        time:
+          new Date().toISOString()
+      });
+
+  });
+
+
+  // ====================================
+  // ROOM
+  // ====================================
+
+  socket.on("joinRoom", (data) => {
+
+    if (!data || !data.roomId) return;
+
+    socket.join(`room:${data.roomId}`);
+
+    socket.roomId = data.roomId;
+
+    io.to(`room:${data.roomId}`)
+      .emit("roomUserJoined", {
+        username:
+          socket.username || "User"
+      });
+
+  });
+
+
+  // ====================================
+  // WEBRTC
+  // ====================================
+
+  socket.on("offer", (data) => {
+
+    if (!data?.to) return;
+
+    io.to(data.to).emit("offer", {
+      from: socket.id,
+      offer: data.offer
+    });
+
+  });
+
+
+  socket.on("answer", (data) => {
+
+    if (!data?.to) return;
+
+    io.to(data.to).emit("answer", {
+      from: socket.id,
+      answer: data.answer
+    });
+
+  });
+
+
+  socket.on("ice-candidate", (data) => {
+
+    if (!data?.to) return;
+
+    io.to(data.to).emit(
+      "ice-candidate",
+      {
+        from: socket.id,
+        candidate: data.candidate
+      }
     );
 
-    try {
-      console.log(
-        "🔄 Database initialization jalqabame..."
-      );
+  });
 
-      const connected =
-        await testDatabase();
 
-      if (!connected) {
-        console.error(
-          "❌ Database connection failed."
-        );
+  // ====================================
+  // MIC
+  // ====================================
 
-        return;
-      }
+  socket.on("micStatus", (status) => {
 
-      await initDatabase();
+    if (!socket.classId) return;
 
-      console.log(
-        "✅ Database initialization completed."
-      );
-    } catch (error) {
-      console.error(
-        "❌ Database initialization error:",
-        error.message
-      );
+    socket.to(`class:${socket.classId}`)
+      .emit("micStatus", {
+        username:
+          socket.username || "User",
+        status
+      });
+
+  });
+
+
+  // ====================================
+  // CAMERA
+  // ====================================
+
+  socket.on("cameraStatus", (status) => {
+
+    if (!socket.roomId) return;
+
+    socket.to(`room:${socket.roomId}`)
+      .emit("cameraStatus", {
+        username:
+          socket.username || "User",
+        status
+      });
+
+  });
+
+
+  // ====================================
+  // DISCONNECT
+  // ====================================
+
+  socket.on("disconnect", async () => {
+
+    console.log("🔴 Disconnected:", socket.id);
+
+    if (socket.username) {
+
+      await supabase
+        .from("users")
+        .update({
+          online: false
+        })
+        .eq("username", socket.username);
+
     }
-  }
-);
+
+  });
+
+});
+
+
+// ======================================
+// START
+// ======================================
+
+server.listen(PORT, "0.0.0.0", () => {
+
+  console.log("================================");
+  console.log("🟢 MULLISA-JM SERVER");
+  console.log("================================");
+  console.log("🚀 Port:", PORT);
+  console.log("📡 Socket.IO: ON");
+  console.log("🗄️ Supabase: ON");
+  console.log("👥 Class seats: 10");
+  console.log("🎥 Rooms: ON");
+  console.log("💬 Chat: ON");
+  console.log("📞 Call signaling: ON");
+  console.log("================================");
+
+});
