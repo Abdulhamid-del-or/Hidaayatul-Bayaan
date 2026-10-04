@@ -75,7 +75,8 @@ async function initDatabase() {
       ADD COLUMN IF NOT EXISTS code TEXT,
       ADD COLUMN IF NOT EXISTS exam_code TEXT,
       ADD COLUMN IF NOT EXISTS created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    `);
+    `ADD COLUMN IF NOT EXISTS creator_id INTEGER
+       ,);
 
     /*
       Old database keessatti code ykn exam_code
@@ -278,7 +279,24 @@ app.get("/api/health", async (req, res) => {
       app: "Hidaayatul-Bayaan",
       database: "PostgreSQL connected"
     });
+await client.query(`
+  ALTER TABLE exams
+  ADD COLUMN IF NOT EXISTS teacher_name TEXT,
+  ADD COLUMN IF NOT EXISTS title TEXT,
+  ADD COLUMN IF NOT EXISTS subject TEXT,
+  ADD COLUMN IF NOT EXISTS grade TEXT,
+  ADD COLUMN IF NOT EXISTS duration INTEGER DEFAULT 30,
+  ADD COLUMN IF NOT EXISTS code TEXT,
+  ADD COLUMN IF NOT EXISTS exam_code TEXT,
+  ADD COLUMN IF NOT EXISTS creator_id INTEGER,
+  ADD COLUMN IF NOT EXISTS created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+`);
 
+/* creator_id amma optional */
+await client.query(`
+  ALTER TABLE exams
+  ALTER COLUMN creator_id DROP NOT NULL
+`);
   } catch (error) {
     console.error("❌ Database error:", error);
 
