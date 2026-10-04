@@ -386,65 +386,111 @@ app.post("/api/exams/:id/questions", async (req, res) => {
    GET EXAM BY CODE
    Correct answer hin ergisiisu
 ========================= */
-
-app.get("/api/exams/code/:code", async (req, res) => {
+app.post("/api/exams", async (req, res) => {
   try {
-    const code = req.params.code
-      .trim()
-      .toUpperCase();
+    const {
+      teacher_name,
+      teacherName,
+      title,
+      subject,
+      grade,
+      duration
+    } = req.body;
 
-    const examResult = await pool.query(
-      `
-      SELECT *
-      FROM exams
-      WHERE exam_code = $1
-      `,
-      [code]
-    );
+    const finalTeacherName = teacher_name || teacherName;
 
-    if (examResult.rows.length === 0) {
-      return res.status(404).json({
-        error: "Qormaata kana hin arganne."
+    if (!finalTeacherName || !title || !subject || !grade) {
+      return res.status(400).json({
+        error: "Maqaa barsiisaa, mata-duree, subject fi kutaan guutamuu qabu."
       });
     }
 
-    const exam = examResult.rows[0];
+    const examDuration = Number(duration) || 30;
 
-    const questionsResult = await pool.query(
-      `
-      SELECT
-        id,
-        question,
-        type,
-        option_a,
-        option_b,
-        option_c,
-        option_d,
-        points
-      FROM questions
-      WHERE exam_id = $1
-      ORDER BY created_at ASC
-      `,
-      [exam.id]
-    );
+    let createdExam = null;
+
+    // Try several times to avoid duplicate exam code
+    for (let attempt = 0; attempt < 10; attempt++) {
+      const code =
+        Math.random().toString(36).substring(2, 8).toUpperCase();
+
+      try {
+        const result = await pool.query(
+          `
+          INSERT INTO exams
+          (
+            teacher_name,
+            title,
+            subject,
+            grade,
+            duration,
+            code,
+            exam_code,
+            created_at
+          )
+          VALUES
+          ($1, $2, $3, $4, $5, $6, $6, CURRENT_TIMESTAMP)
+          RETURNING *
+          `,
+          [
+            finalTeacherName,
+            title,
+            subject,
+            grade,
+            examDuration,
+            code
+          ]
+        );
+
+        createdExam = result.rows[0];
+        break;
+
+      } catch (err) {
+        // Duplicate code -> try another code
+        if (
+          err.code === "23505" &&
+          (
+            err.constraint?.includes("code") ||
+            err.constraint?.includes("exam_code")
+          )
+        ) {
+          continue;
+        }
+
+        throw err;
+      }
+    }
+
+    if (!createdExam) {
+      return res.status(500).json({
+        error: "Exam code uumuu hin dandeenye. Irra deebi'ii yaali."
+      });
+    }
+
+    const returnedCode =
+      createdExam.code ||
+      createdExam.exam_code;
 
     res.json({
+      success: true,
       exam: {
-        id: exam.id,
-        title: exam.title,
-        subject: exam.subject,
-        grade: exam.grade,
-        duration: exam.duration,
-        exam_code: exam.exam_code,
-        teacher_name: exam.teacher_name
+        id: createdExam.id,
+        code: returnedCode,
+        exam_code: returnedCode,
+        teacher_name: createdExam.teacher_name,
+        title: createdExam.title,
+        subject: createdExam.subject,
+        grade: createdExam.grade,
+        duration: createdExam.duration
       },
-      questions: questionsResult.rows
+      link: `/?exam=${returnedCode}`
     });
+
   } catch (error) {
-    console.error(error);
+    console.error("❌ Exam creation error:", error);
 
     res.status(500).json({
-      error: error.message
+      error: error.message || "Qormaata uumuu irratti rakkoon uumame."
     });
   }
 });
