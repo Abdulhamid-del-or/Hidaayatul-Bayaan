@@ -32,7 +32,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "public")));
 
 /* =========================
-   CODE
+   EXAM CODE
 ========================= */
 
 function makeCode(length = 8) {
@@ -44,8 +44,9 @@ function makeCode(length = 8) {
 }
 
 /* =========================
-   DATABASE TABLES
+   DATABASE INITIALIZATION
 ========================= */
+
 async function initDatabase() {
   const client = await pool.connect();
 
@@ -54,16 +55,16 @@ async function initDatabase() {
 
     await client.query("BEGIN");
 
-    // =========================
-    // EXAMS TABLE
-    // =========================
+    /* =========================
+       EXAMS
+    ========================= */
+
     await client.query(`
       CREATE TABLE IF NOT EXISTS exams (
         id SERIAL PRIMARY KEY
       )
     `);
 
-    // Add missing columns automatically
     await client.query(`
       ALTER TABLE exams
       ADD COLUMN IF NOT EXISTS teacher_name TEXT,
@@ -71,20 +72,88 @@ async function initDatabase() {
       ADD COLUMN IF NOT EXISTS subject TEXT,
       ADD COLUMN IF NOT EXISTS grade TEXT,
       ADD COLUMN IF NOT EXISTS duration INTEGER DEFAULT 30,
+      ADD COLUMN IF NOT EXISTS code TEXT,
       ADD COLUMN IF NOT EXISTS exam_code TEXT,
       ADD COLUMN IF NOT EXISTS created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     `);
 
-    // Unique index for exam code
+    /*
+      Old database keessatti code ykn exam_code
+      NULL ta'ee jiraachuu danda'a.
+
+      Qormaata duraanii irratti code uumuu.
+    */
+
+    const oldExams = await client.query(`
+      SELECT id
+      FROM exams
+      WHERE code IS NULL
+         OR code = ''
+         OR exam_code IS NULL
+         OR exam_code = ''
+    `);
+
+    for (const row of oldExams.rows) {
+      let code = makeCode();
+
+      let exists = await client.query(
+        `
+        SELECT id
+        FROM exams
+        WHERE code = $1
+           OR exam_code = $1
+        LIMIT 1
+        `,
+        [code]
+      );
+
+      while (exists.rows.length > 0) {
+        code = makeCode();
+
+        exists = await client.query(
+          `
+          SELECT id
+          FROM exams
+          WHERE code = $1
+             OR exam_code = $1
+          LIMIT 1
+          `,
+          [code]
+        );
+      }
+
+      await client.query(
+        `
+        UPDATE exams
+        SET
+          code = COALESCE(NULLIF(code, ''), $1),
+          exam_code = COALESCE(NULLIF(exam_code, ''), $1)
+        WHERE id = $2
+        `,
+        [code, row.id]
+      );
+    }
+
+    /* =========================
+       UNIQUE INDEX
+    ========================= */
+
+    await client.query(`
+      CREATE UNIQUE INDEX IF NOT EXISTS exams_code_unique
+      ON exams(code)
+      WHERE code IS NOT NULL
+    `);
+
     await client.query(`
       CREATE UNIQUE INDEX IF NOT EXISTS exams_exam_code_unique
       ON exams(exam_code)
       WHERE exam_code IS NOT NULL
     `);
 
-    // =========================
-    // QUESTIONS TABLE
-    // =========================
+    /* =========================
+       QUESTIONS
+    ========================= */
+
     await client.query(`
       CREATE TABLE IF NOT EXISTS questions (
         id SERIAL PRIMARY KEY
@@ -105,7 +174,6 @@ async function initDatabase() {
       ADD COLUMN IF NOT EXISTS created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     `);
 
-    // Foreign key only if it does not already exist
     const questionFK = await client.query(`
       SELECT 1
       FROM pg_constraint
@@ -127,9 +195,10 @@ async function initDatabase() {
       ON questions(exam_id)
     `);
 
-    // =========================
-    // RESULTS TABLE
-    // =========================
+    /* =========================
+       RESULTS
+    ========================= */
+
     await client.query(`
       CREATE TABLE IF NOT EXISTS results (
         id SERIAL PRIMARY KEY
@@ -175,16 +244,16 @@ async function initDatabase() {
   } catch (error) {
     await client.query("ROLLBACK");
 
-    console.error("❌ Database initialization failed:");
-    console.error(error.message);
+    console.error(
+      "❌ Database initialization failed:",
+      error.message
+    );
 
     throw error;
   } finally {
     client.release();
   }
 }
-
-
 
 /* =========================
    HOME
@@ -209,8 +278,9 @@ app.get("/api/health", async (req, res) => {
       app: "Hidaayatul-Bayaan",
       database: "PostgreSQL connected"
     });
+
   } catch (error) {
-    console.error("Database error:", error);
+    console.error("❌ Database error:", error);
 
     res.status(500).json({
       ok: false,
@@ -228,25 +298,33 @@ app.post("/api/exams", async (req, res) => {
   try {
     const {
       teacher_name,
+      teacherName,
       title,
       subject,
       grade,
       duration
     } = req.body;
 
-    if (!teacher_name || !title) {
+    const teacher = teacher_name || teacherName;
+
+    if (!teacher || !title) {
       return res.status(400).json({
-        error: "Maqaa barsiisaa fi maqaa qormaataa guuti."
+        error:
+          "Maqaa barsiisaa fi maqaa qormaataa guuti."
       });
     }
+
+    const examDuration = Number(duration) || 30;
 
     let exam = null;
     let lastError = null;
 
-    for (let i = 0; i < 5; i++) {
-      const exam_code = makeCode();
+    for (let i = 0; i < 10; i++) {
+
+      const code = makeCode(8);
 
       try {
+
         const result = await pool.query(
           `
           INSERT INTO exams
@@ -256,25 +334,42 @@ app.post("/api/exams", async (req, res) => {
             subject,
             grade,
             duration,
-            exam_code
+            code,
+            exam_code,
+            created_at
           )
-          VALUES ($1,$2,$3,$4,$5,$6)
+          VALUES
+          ($1,$2,$3,$4,$5,$6,$6,CURRENT_TIMESTAMP)
           RETURNING *
           `,
           [
-            teacher_name,
+            teacher,
             title,
             subject || "",
             grade || "",
-            Number(duration) || 30,
-            exam_code
+            examDuration,
+            code
           ]
         );
 
         exam = result.rows[0];
+
         break;
+
       } catch (error) {
+
         lastError = error;
+
+        /*
+          Duplicate code yoo ta'e
+          code haaraa uuma.
+        */
+
+        if (error.code === "23505") {
+          continue;
+        }
+
+        throw error;
       }
     }
 
@@ -286,12 +381,99 @@ app.post("/api/exams", async (req, res) => {
       });
     }
 
+    const examCode =
+      exam.code ||
+      exam.exam_code;
+
+    res.status(201).json({
+      success: true,
+
+      exam: {
+        id: exam.id,
+        code: examCode,
+        exam_code: examCode,
+        teacher_name: exam.teacher_name,
+        title: exam.title,
+        subject: exam.subject,
+        grade: exam.grade,
+        duration: exam.duration
+      },
+
+      link:
+        `${req.protocol}://${req.get("host")}/?exam=${examCode}`
+    });
+
+  } catch (error) {
+
+    console.error(
+      "❌ Exam creation error:",
+      error
+    );
+
+    res.status(500).json({
+      error:
+        error.message ||
+        "Qormaata uumuu irratti rakkoon uumame."
+    });
+  }
+});
+
+/* =========================
+   GET EXAM BY CODE
+========================= */
+
+app.get("/api/exams/code/:code", async (req, res) => {
+  try {
+
+    const code =
+      String(req.params.code || "")
+        .trim()
+        .toUpperCase();
+
+    if (!code) {
+      return res.status(400).json({
+        error: "Exam code galchi."
+      });
+    }
+
+    const result = await pool.query(
+      `
+      SELECT
+        id,
+        teacher_name,
+        title,
+        subject,
+        grade,
+        duration,
+        code,
+        exam_code,
+        created_at
+      FROM exams
+      WHERE UPPER(code) = $1
+         OR UPPER(exam_code) = $1
+      LIMIT 1
+      `,
+      [code]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({
+        error:
+          "Koodiin qormaataa kun hin argamne."
+      });
+    }
+
     res.json({
       success: true,
-      exam
+      exam: result.rows[0]
     });
+
   } catch (error) {
-    console.error(error);
+
+    console.error(
+      "❌ Get exam error:",
+      error
+    );
 
     res.status(500).json({
       error: error.message
@@ -305,7 +487,14 @@ app.post("/api/exams", async (req, res) => {
 
 app.post("/api/exams/:id/questions", async (req, res) => {
   try {
+
     const examId = Number(req.params.id);
+
+    if (!Number.isInteger(examId)) {
+      return res.status(400).json({
+        error: "Exam ID sirrii miti."
+      });
+    }
 
     const {
       question,
@@ -320,7 +509,8 @@ app.post("/api/exams/:id/questions", async (req, res) => {
 
     if (!question || !correct_answer) {
       return res.status(400).json({
-        error: "Gaaffii fi deebii sirrii guuti."
+        error:
+          "Gaaffii fi deebii sirrii guuti."
       });
     }
 
@@ -335,7 +525,8 @@ app.post("/api/exams/:id/questions", async (req, res) => {
 
     if (examResult.rows.length === 0) {
       return res.status(404).json({
-        error: "Qormaanni hin argamne."
+        error:
+          "Qormaanni hin argamne."
       });
     }
 
@@ -353,7 +544,8 @@ app.post("/api/exams/:id/questions", async (req, res) => {
         correct_answer,
         points
       )
-      VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)
+      VALUES
+      ($1,$2,$3,$4,$5,$6,$7,$8,$9)
       RETURNING *
       `,
       [
@@ -369,12 +561,17 @@ app.post("/api/exams/:id/questions", async (req, res) => {
       ]
     );
 
-    res.json({
+    res.status(201).json({
       success: true,
       question: result.rows[0]
     });
+
   } catch (error) {
-    console.error(error);
+
+    console.error(
+      "❌ Add question error:",
+      error
+    );
 
     res.status(500).json({
       error: error.message
@@ -383,141 +580,45 @@ app.post("/api/exams/:id/questions", async (req, res) => {
 });
 
 /* =========================
-   GET EXAM BY CODE
-   Correct answer hin ergisiisu
-========================= */
-app.post("/api/exams", async (req, res) => {
-  try {
-    const {
-      teacher_name,
-      teacherName,
-      title,
-      subject,
-      grade,
-      duration
-    } = req.body;
-
-    const finalTeacherName = teacher_name || teacherName;
-
-    if (!finalTeacherName || !title || !subject || !grade) {
-      return res.status(400).json({
-        error: "Maqaa barsiisaa, mata-duree, subject fi kutaan guutamuu qabu."
-      });
-    }
-
-    const examDuration = Number(duration) || 30;
-
-    let createdExam = null;
-
-    // Try several times to avoid duplicate exam code
-    for (let attempt = 0; attempt < 10; attempt++) {
-      const code =
-        Math.random().toString(36).substring(2, 8).toUpperCase();
-
-      try {
-        const result = await pool.query(
-          `
-          INSERT INTO exams
-          (
-            teacher_name,
-            title,
-            subject,
-            grade,
-            duration,
-            code,
-            exam_code,
-            created_at
-          )
-          VALUES
-          ($1, $2, $3, $4, $5, $6, $6, CURRENT_TIMESTAMP)
-          RETURNING *
-          `,
-          [
-            finalTeacherName,
-            title,
-            subject,
-            grade,
-            examDuration,
-            code
-          ]
-        );
-
-        createdExam = result.rows[0];
-        break;
-
-      } catch (err) {
-        // Duplicate code -> try another code
-        if (
-          err.code === "23505" &&
-          (
-            err.constraint?.includes("code") ||
-            err.constraint?.includes("exam_code")
-          )
-        ) {
-          continue;
-        }
-
-        throw err;
-      }
-    }
-
-    if (!createdExam) {
-      return res.status(500).json({
-        error: "Exam code uumuu hin dandeenye. Irra deebi'ii yaali."
-      });
-    }
-
-    const returnedCode =
-      createdExam.code ||
-      createdExam.exam_code;
-
-    res.json({
-      success: true,
-      exam: {
-        id: createdExam.id,
-        code: returnedCode,
-        exam_code: returnedCode,
-        teacher_name: createdExam.teacher_name,
-        title: createdExam.title,
-        subject: createdExam.subject,
-        grade: createdExam.grade,
-        duration: createdExam.duration
-      },
-      link: `/?exam=${returnedCode}`
-    });
-
-  } catch (error) {
-    console.error("❌ Exam creation error:", error);
-
-    res.status(500).json({
-      error: error.message || "Qormaata uumuu irratti rakkoon uumame."
-    });
-  }
-});
-
-/* =========================
-   QUESTIONS
+   GET QUESTIONS
 ========================= */
 
 app.get("/api/exams/:id/questions", async (req, res) => {
   try {
+
     const examId = Number(req.params.id);
 
     const result = await pool.query(
       `
-      SELECT *
+      SELECT
+        id,
+        exam_id,
+        question,
+        type,
+        option_a,
+        option_b,
+        option_c,
+        option_d,
+        points,
+        created_at
       FROM questions
       WHERE exam_id = $1
-      ORDER BY created_at ASC
+      ORDER BY id ASC
       `,
       [examId]
     );
 
     res.json({
+      success: true,
       questions: result.rows
     });
+
   } catch (error) {
-    console.error(error);
+
+    console.error(
+      "❌ Get questions error:",
+      error
+    );
 
     res.status(500).json({
       error: error.message
@@ -531,16 +632,22 @@ app.get("/api/exams/:id/questions", async (req, res) => {
 
 app.post("/api/exams/:id/submit", async (req, res) => {
   try {
+
     const examId = Number(req.params.id);
 
     const {
       student_name,
+      studentName,
       answers
     } = req.body;
 
-    if (!student_name) {
+    const student =
+      student_name || studentName;
+
+    if (!student) {
       return res.status(400).json({
-        error: "Maqaa barataa galchi."
+        error:
+          "Maqaa barataa galchi."
       });
     }
 
@@ -555,7 +662,8 @@ app.post("/api/exams/:id/submit", async (req, res) => {
 
     if (examResult.rows.length === 0) {
       return res.status(404).json({
-        error: "Qormaata hin argamne."
+        error:
+          "Qormaata hin argamne."
       });
     }
 
@@ -564,23 +672,34 @@ app.post("/api/exams/:id/submit", async (req, res) => {
       SELECT *
       FROM questions
       WHERE exam_id = $1
-      ORDER BY created_at ASC
+      ORDER BY id ASC
       `,
       [examId]
     );
 
-    const questions = questionsResult.rows;
+    const questions =
+      questionsResult.rows;
+
+    if (questions.length === 0) {
+      return res.status(400).json({
+        error:
+          "Qormaata kana keessatti gaaffiin hin jiru."
+      });
+    }
 
     let score = 0;
     let total = 0;
 
     for (const q of questions) {
-      const points = Number(q.points || 1);
+
+      const points =
+        Number(q.points || 1);
 
       total += points;
 
       const userAnswer =
-        answers && answers[q.id]
+        answers &&
+        answers[q.id] !== undefined
           ? String(answers[q.id])
               .trim()
               .toLowerCase()
@@ -601,7 +720,9 @@ app.post("/api/exams/:id/submit", async (req, res) => {
 
     const percentage =
       total > 0
-        ? Math.round((score / total) * 100)
+        ? Math.round(
+            (score / total) * 100
+          )
         : 0;
 
     const result = await pool.query(
@@ -615,33 +736,40 @@ app.post("/api/exams/:id/submit", async (req, res) => {
         percentage,
         answers
       )
-      VALUES ($1,$2,$3,$4,$5,$6)
+      VALUES
+      ($1,$2,$3,$4,$5,$6)
       RETURNING *
       `,
       [
         examId,
-        student_name,
+        student,
         score,
         total,
         percentage,
-        JSON.stringify(answers || {})
+        JSON.stringify(
+          answers || {}
+        )
       ]
     );
 
-    const saved = result.rows[0];
-
-    res.json({
+    res.status(201).json({
       success: true,
+
       result: {
-        id: saved.id,
-        student_name,
+        id: result.rows[0].id,
+        student_name: student,
         score,
         total,
         percentage
       }
     });
+
   } catch (error) {
-    console.error(error);
+
+    console.error(
+      "❌ Submit error:",
+      error
+    );
 
     res.status(500).json({
       error: error.message
@@ -655,121 +783,172 @@ app.post("/api/exams/:id/submit", async (req, res) => {
 
 app.get("/api/exams/:id/results", async (req, res) => {
   try {
-    const examId = Number(req.params.id);
 
-    const examResult = await pool.query(
-      `
-      SELECT
-        id,
-        title,
-        subject,
-        grade,
-        duration,
-        exam_code,
-        teacher_name
-      FROM exams
-      WHERE id = $1
-      `,
-      [examId]
-    );
+    const examId =
+      Number(req.params.id);
+
+    const examResult =
+      await pool.query(
+        `
+        SELECT
+          id,
+          title,
+          subject,
+          grade,
+          duration,
+          code,
+          exam_code,
+          teacher_name
+        FROM exams
+        WHERE id = $1
+        `,
+        [examId]
+      );
 
     if (examResult.rows.length === 0) {
       return res.status(404).json({
-        error: "Qormaata hin argamne."
+        error:
+          "Qormaata hin argamne."
       });
     }
 
-    const exam = examResult.rows[0];
+    const exam =
+      examResult.rows[0];
 
-    const questionsResult = await pool.query(
-      `
-      SELECT *
-      FROM questions
-      WHERE exam_id = $1
-      ORDER BY created_at ASC
-      `,
-      [examId]
-    );
+    const questionsResult =
+      await pool.query(
+        `
+        SELECT *
+        FROM questions
+        WHERE exam_id = $1
+        ORDER BY id ASC
+        `,
+        [examId]
+      );
 
-    const resultsResult = await pool.query(
-      `
-      SELECT *
-      FROM results
-      WHERE exam_id = $1
-      ORDER BY created_at DESC
-      `,
-      [examId]
-    );
+    const resultsResult =
+      await pool.query(
+        `
+        SELECT *
+        FROM results
+        WHERE exam_id = $1
+        ORDER BY created_at DESC
+        `,
+        [examId]
+      );
 
-    const questions = questionsResult.rows;
-    const results = resultsResult.rows;
+    const questions =
+      questionsResult.rows;
 
-    const students = results.map((result) => {
-      const answers = result.answers || {};
+    const results =
+      resultsResult.rows;
 
-      let correctCount = 0;
-      let wrongCount = 0;
-      let unansweredCount = 0;
+    const students =
+      results.map((result) => {
 
-      const details = questions.map((q, index) => {
-        const studentAnswer =
-          answers[q.id] !== undefined
-            ? String(answers[q.id])
-            : "";
+        const answers =
+          result.answers || {};
 
-        const correctAnswer =
-          String(q.correct_answer || "");
+        let correctCount = 0;
+        let wrongCount = 0;
+        let unansweredCount = 0;
 
-        let status = "unanswered";
+        const details =
+          questions.map(
+            (q, index) => {
 
-        if (!studentAnswer.trim()) {
-          unansweredCount++;
-          status = "unanswered";
-        } else if (
-          studentAnswer
-            .trim()
-            .toLowerCase() ===
-          correctAnswer
-            .trim()
-            .toLowerCase()
-        ) {
-          correctCount++;
-          status = "correct";
-        } else {
-          wrongCount++;
-          status = "wrong";
-        }
+              const studentAnswer =
+                answers[q.id] !== undefined
+                  ? String(answers[q.id])
+                  : "";
+
+              const correctAnswer =
+                String(
+                  q.correct_answer || ""
+                );
+
+              let status =
+                "unanswered";
+
+              if (!studentAnswer.trim()) {
+
+                unansweredCount++;
+
+                status =
+                  "unanswered";
+
+              } else if (
+                studentAnswer
+                  .trim()
+                  .toLowerCase() ===
+                correctAnswer
+                  .trim()
+                  .toLowerCase()
+              ) {
+
+                correctCount++;
+
+                status =
+                  "correct";
+
+              } else {
+
+                wrongCount++;
+
+                status =
+                  "wrong";
+              }
+
+              return {
+                number: index + 1,
+                question: q.question,
+                student_answer:
+                  studentAnswer,
+                correct_answer:
+                  correctAnswer,
+                points:
+                  Number(q.points || 1),
+                status
+              };
+            }
+          );
 
         return {
-          number: index + 1,
-          question: q.question,
-          student_answer: studentAnswer,
-          correct_answer: correctAnswer,
-          points: Number(q.points || 1),
-          status
+          id: result.id,
+          student_name:
+            result.student_name,
+          score:
+            Number(result.score || 0),
+          total:
+            Number(result.total || 0),
+          percentage:
+            Number(
+              result.percentage || 0
+            ),
+          created_at:
+            result.created_at,
+          correct_count:
+            correctCount,
+          wrong_count:
+            wrongCount,
+          unanswered_count:
+            unansweredCount,
+          details
         };
       });
 
-      return {
-        id: result.id,
-        student_name: result.student_name,
-        score: Number(result.score || 0),
-        total: Number(result.total || 0),
-        percentage: Number(result.percentage || 0),
-        created_at: result.created_at,
-        correct_count: correctCount,
-        wrong_count: wrongCount,
-        unanswered_count: unansweredCount,
-        details
-      };
-    });
-
     res.json({
+      success: true,
       exam,
       students
     });
+
   } catch (error) {
-    console.error(error);
+
+    console.error(
+      "❌ Results error:",
+      error
+    );
 
     res.status(500).json({
       error: error.message
@@ -783,28 +962,37 @@ app.get("/api/exams/:id/results", async (req, res) => {
 
 app.delete("/api/questions/:id", async (req, res) => {
   try {
-    const questionId = Number(req.params.id);
 
-    const result = await pool.query(
-      `
-      DELETE FROM questions
-      WHERE id = $1
-      RETURNING id
-      `,
-      [questionId]
-    );
+    const questionId =
+      Number(req.params.id);
+
+    const result =
+      await pool.query(
+        `
+        DELETE FROM questions
+        WHERE id = $1
+        RETURNING id
+        `,
+        [questionId]
+      );
 
     if (result.rows.length === 0) {
       return res.status(404).json({
-        error: "Gaaffiin hin argamne."
+        error:
+          "Gaaffiin hin argamne."
       });
     }
 
     res.json({
       success: true
     });
+
   } catch (error) {
-    console.error(error);
+
+    console.error(
+      "❌ Delete question error:",
+      error
+    );
 
     res.status(500).json({
       error: error.message
@@ -813,21 +1001,39 @@ app.delete("/api/questions/:id", async (req, res) => {
 });
 
 /* =========================
+   404 API
+========================= */
+
+app.use("/api", (req, res) => {
+  res.status(404).json({
+    error:
+      "API route kun hin argamne."
+  });
+});
+
+/* =========================
    SERVER START
 ========================= */
 
 async function startServer() {
   try {
+
     await initDatabase();
 
-    app.listen(PORT, "0.0.0.0", () => {
-      console.log(
-        `✅ Hidaayatul-Bayaan server running on port ${PORT}`
-      );
-    });
+    app.listen(
+      PORT,
+      "0.0.0.0",
+      () => {
+        console.log(
+          `🚀 Hidaayatul-Bayaan server running on port ${PORT}`
+        );
+      }
+    );
+
   } catch (error) {
+
     console.error(
-      "❌ Database initialization failed:",
+      "❌ Server start failed:",
       error.message
     );
 
