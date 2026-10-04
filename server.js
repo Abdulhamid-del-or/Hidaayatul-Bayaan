@@ -210,7 +210,101 @@ async function initDatabase() {
       CREATE INDEX IF NOT EXISTS questions_exam_id_idx
       ON questions(exam_id)
     `);
+// ===============================
+// ADD QUESTION
+// ===============================
+app.post("/api/exams/:id/questions", async (req, res) => {
+  const examId = req.params.id;
 
+  const {
+    question,
+    question_text,
+    type = "multiple",
+    option_a = "",
+    option_b = "",
+    option_c = "",
+    option_d = "",
+    correct_answer,
+    points = 1
+  } = req.body;
+
+  // question ykn question_text keessaa isa jiru fudhadhu
+  const questionText = String(
+    question_text || question || ""
+  ).trim();
+
+  if (!questionText) {
+    return res.status(400).json({
+      success: false,
+      error: "Gaaffiin qormaataa duwwaa ta'uu hin qabu."
+    });
+  }
+
+  if (!correct_answer) {
+    return res.status(400).json({
+      success: false,
+      error: "Deebiin sirrii filatamuu qaba."
+    });
+  }
+
+  try {
+    // Exam jiraachuu mirkaneessi
+    const examCheck = await pool.query(
+      "SELECT id FROM exams WHERE id = $1",
+      [examId]
+    );
+
+    if (examCheck.rowCount === 0) {
+      return res.status(404).json({
+        success: false,
+        error: "Qormaanni kun hin argamne."
+      });
+    }
+
+    // questions table keessatti question_text fayyadami
+    const result = await pool.query(
+      `
+      INSERT INTO questions (
+        exam_id,
+        question_text,
+        type,
+        option_a,
+        option_b,
+        option_c,
+        option_d,
+        correct_answer,
+        points
+      )
+      VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)
+      RETURNING *
+      `,
+      [
+        examId,
+        questionText,
+        type,
+        option_a,
+        option_b,
+        option_c,
+        option_d,
+        correct_answer,
+        Number(points) || 1
+      ]
+    );
+
+    return res.json({
+      success: true,
+      question: result.rows[0]
+    });
+
+  } catch (error) {
+    console.error("ADD QUESTION ERROR:", error);
+
+    return res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
     /* =================================================
        RESULTS TABLE
     ================================================= */
