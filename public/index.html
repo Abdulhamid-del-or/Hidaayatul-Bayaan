@@ -440,15 +440,23 @@ Haala server fi database ilaali.
 
 <input
   id="examTitle"
-  placeholder="Fakkeenya: Qormaata Fiqhii"
+  placeholder="Fakkeenya: Qormaata Ji'a 1ffaa"
 >
 
 <label>Barnoota</label>
 
 <input
   id="examSubject"
-  placeholder="Fakkeenya: Salaata"
+  placeholder="Fakkeenya: Herrega"
 >
+
+<label>Sadarkaa / Kutaa</label>
+
+<input
+  id="examGrade"
+  placeholder="Fakkeenya: Kutaa 8"
+>
+
 <label>Yeroo Qormaataa (daqiiqaa)</label>
 
 <input
@@ -1799,8 +1807,11 @@ async function submitExam() {
           </b>
         </p>
 
->
- </div>
+        <button
+          class="primary-btn"
+          onclick="showPage('homePage')"
+        >
+      </div>
 
     `;
 
@@ -2244,4 +2255,4 @@ checkExamFromUrl();
 
 </body>
 
-  </html>
+                </html>
