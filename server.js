@@ -18,12 +18,16 @@ const pool = new Pool({
   ssl: {
     rejectUnauthorized: false
   },
-  connectionTimeoutMillis: 10000
+  connectionTimeoutMillis: 15000
 });
 
 app.use(express.json({ limit: "2mb" }));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "public")));
+
+/* =========================
+   CODE GENERATOR
+========================= */
 
 function makeCode() {
   return crypto
@@ -37,76 +41,54 @@ function makeCode() {
 ========================= */
 
 async function initDatabase() {
-  console.log("⏳ Database qopheessaa...");
+  console.log("⏳ Hidaayatul-Bayaan database qopheessaa...");
 
-  await pool.query(`
-    CREATE TABLE IF NOT EXISTS exams (
-      id SERIAL PRIMARY KEY
-    )
-  `);
+  /*
+    IMPORTANT:
+    OR tables:
+      exams
+      questions
+      results
 
-  const examColumns = [
-    ["teacher_name", "TEXT"],
-    ["title", "TEXT"],
-    ["subject", "TEXT"],
-    ["grade", "TEXT"],
-    ["duration", "INTEGER DEFAULT 30"],
-    ["code", "TEXT"],
-    ["exam_code", "TEXT"],
-    ["creator_id", "INTEGER"],
-    ["created_at", "TIMESTAMP DEFAULT CURRENT_TIMESTAMP"]
-  ];
+    Hidaayatul-Bayaan tables:
+      hb_exams
+      hb_questions
+      hb_results
 
-  for (const [name, type] of examColumns) {
-    await pool.query(`
-      ALTER TABLE exams
-      ADD COLUMN IF NOT EXISTS ${name} ${type}
-    `);
-  }
-
-  /* creator_id nullable godhi */
-  await pool.query(`
-    ALTER TABLE exams
-    ALTER COLUMN creator_id DROP NOT NULL
-  `);
-
-  /* code duraan jiru yoo jiraate sirreessi */
-  await pool.query(`
-    UPDATE exams
-    SET code = UPPER(
-      SUBSTRING(
-        MD5(RANDOM()::TEXT || CLOCK_TIMESTAMP()::TEXT)
-        FROM 1 FOR 8
-      )
-    )
-    WHERE code IS NULL OR TRIM(code) = ''
-  `);
-
-  await pool.query(`
-    UPDATE exams
-    SET exam_code = code
-    WHERE exam_code IS NULL OR TRIM(exam_code) = ''
-  `);
-
-  /* code unique */
-  await pool.query(`
-    CREATE UNIQUE INDEX IF NOT EXISTS exams_code_unique
-    ON exams(code)
-  `);
-
-  await pool.query(`
-    CREATE UNIQUE INDEX IF NOT EXISTS exams_exam_code_unique
-    ON exams(exam_code)
-  `);
+    OR tables hin tuqaman.
+  */
 
   /* =========================
-     QUESTIONS
+     HB EXAMS
   ========================= */
 
   await pool.query(`
-    CREATE TABLE IF NOT EXISTS questions (
+    CREATE TABLE IF NOT EXISTS hb_exams (
       id SERIAL PRIMARY KEY,
-      exam_id INTEGER,
+      teacher_name TEXT NOT NULL,
+      title TEXT NOT NULL,
+      subject TEXT DEFAULT '',
+      grade TEXT DEFAULT '',
+      duration INTEGER NOT NULL DEFAULT 30,
+      code TEXT UNIQUE NOT NULL,
+      exam_code TEXT UNIQUE NOT NULL,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+  `);
+
+  await pool.query(`
+    CREATE INDEX IF NOT EXISTS hb_exams_code_idx
+    ON hb_exams(code)
+  `);
+
+  /* =========================
+     HB QUESTIONS
+  ========================= */
+
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS hb_questions (
+      id SERIAL PRIMARY KEY,
+      exam_id INTEGER NOT NULL,
       question_text TEXT,
       question TEXT,
       type TEXT DEFAULT 'multiple',
@@ -116,76 +98,25 @@ async function initDatabase() {
       option_d TEXT,
       correct_answer TEXT,
       points NUMERIC DEFAULT 1,
-      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      CONSTRAINT hb_questions_exam_fk
+        FOREIGN KEY (exam_id)
+        REFERENCES hb_exams(id)
+        ON DELETE CASCADE
     )
   `);
 
-  const questionColumns = [
-    ["exam_id", "INTEGER"],
-    ["question_text", "TEXT"],
-    ["question", "TEXT"],
-    ["type", "TEXT DEFAULT 'multiple'"],
-    ["option_a", "TEXT"],
-    ["option_b", "TEXT"],
-    ["option_c", "TEXT"],
-    ["option_d", "TEXT"],
-    ["correct_answer", "TEXT"],
-    ["points", "NUMERIC DEFAULT 1"],
-    ["created_at", "TIMESTAMP DEFAULT CURRENT_TIMESTAMP"]
-  ];
-
-  for (const [name, type] of questionColumns) {
-    await pool.query(`
-      ALTER TABLE questions
-      ADD COLUMN IF NOT EXISTS ${name} ${type}
-    `);
-  }
-
   await pool.query(`
-    UPDATE questions
-    SET question_text = question
-    WHERE
-      (question_text IS NULL OR TRIM(question_text) = '')
-      AND question IS NOT NULL
+    CREATE INDEX IF NOT EXISTS hb_questions_exam_id_idx
+    ON hb_questions(exam_id)
   `);
-
-  await pool.query(`
-    UPDATE questions
-    SET question = question_text
-    WHERE
-      (question IS NULL OR TRIM(question) = '')
-      AND question_text IS NOT NULL
-  `);
-
-  await pool.query(`
-    CREATE INDEX IF NOT EXISTS questions_exam_id_idx
-    ON questions(exam_id)
-  `);
-
-  /* FK yoo hin jirre rakkaa hin godhin */
-  try {
-    await pool.query(`
-      ALTER TABLE questions
-      ADD CONSTRAINT questions_exam_fk
-      FOREIGN KEY (exam_id)
-      REFERENCES exams(id)
-      ON DELETE CASCADE
-    `);
-  } catch (e) {
-    if (!String(e.message).includes("already exists")) {
-      console.log(
-        "ℹ️ Question FK duraan jira ykn hin dabalamin:",
-        e.message
-      );
-    }
-  }
 
   /* =========================
-     RESULTS
+     HB RESULTS
   ========================= */
 
   await pool.query(`
-    CREATE TABLE IF NOT EXISTS results (
+    CREATE TABLE IF NOT EXISTS hb_results (
       id SERIAL PRIMARY KEY,
       exam_id INTEGER NOT NULL,
       student_name TEXT NOT NULL,
@@ -193,33 +124,20 @@ async function initDatabase() {
       total NUMERIC DEFAULT 0,
       percentage NUMERIC DEFAULT 0,
       answers JSONB DEFAULT '{}'::jsonb,
-      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      CONSTRAINT hb_results_exam_fk
+        FOREIGN KEY (exam_id)
+        REFERENCES hb_exams(id)
+        ON DELETE CASCADE
     )
   `);
 
-  const resultColumns = [
-    ["exam_id", "INTEGER"],
-    ["student_name", "TEXT"],
-    ["score", "NUMERIC DEFAULT 0"],
-    ["total", "NUMERIC DEFAULT 0"],
-    ["percentage", "NUMERIC DEFAULT 0"],
-    ["answers", "JSONB DEFAULT '{}'::jsonb"],
-    ["created_at", "TIMESTAMP DEFAULT CURRENT_TIMESTAMP"]
-  ];
-
-  for (const [name, type] of resultColumns) {
-    await pool.query(`
-      ALTER TABLE results
-      ADD COLUMN IF NOT EXISTS ${name} ${type}
-    `);
-  }
-
   await pool.query(`
-    CREATE INDEX IF NOT EXISTS results_exam_id_idx
-    ON results(exam_id)
+    CREATE INDEX IF NOT EXISTS hb_results_exam_id_idx
+    ON hb_results(exam_id)
   `);
 
-  console.log("✅ Database migrations completed.");
+  console.log("✅ Hidaayatul-Bayaan database qophaa'eera.");
 }
 
 /* =========================
@@ -246,10 +164,46 @@ app.get("/api/health", async (req, res) => {
       database: "connected",
       app: "Hidaayatul-Bayaan"
     });
+
+  } catch (error) {
+    console.error("Health error:", error);
+
+    res.status(500).json({
+      success: false,
+      status: "ERROR",
+      database: "error",
+      error: error.message
+    });
+  }
+});
+
+/* =========================
+   STATUS
+========================= */
+
+app.get("/api/status", async (req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT
+        (SELECT COUNT(*) FROM hb_exams) AS exams,
+        (SELECT COUNT(*) FROM hb_questions) AS questions,
+        (SELECT COUNT(*) FROM hb_results) AS results
+    `);
+
+    res.json({
+      success: true,
+      app: "Hidaayatul-Bayaan",
+      database: "connected",
+      tables: {
+        exams: Number(result.rows[0].exams),
+        questions: Number(result.rows[0].questions),
+        results: Number(result.rows[0].results)
+      }
+    });
+
   } catch (error) {
     res.status(500).json({
       success: false,
-      database: "error",
       error: error.message
     });
   }
@@ -304,7 +258,7 @@ app.post("/api/exams", async (req, res) => {
 
     const result = await pool.query(
       `
-      INSERT INTO exams
+      INSERT INTO hb_exams
       (
         teacher_name,
         title,
@@ -312,11 +266,10 @@ app.post("/api/exams", async (req, res) => {
         grade,
         duration,
         code,
-        exam_code,
-        creator_id
+        exam_code
       )
       VALUES
-      ($1, $2, $3, $4, $5, $6, $6, NULL)
+      ($1,$2,$3,$4,$5,$6,$6)
       RETURNING *
       `,
       [
@@ -362,7 +315,10 @@ app.post("/api/exams", async (req, res) => {
 
 app.get("/api/exams/code/:code", async (req, res) => {
   try {
-    const code = req.params.code.trim().toUpperCase();
+    const code =
+      String(req.params.code || "")
+        .trim()
+        .toUpperCase();
 
     const result = await pool.query(
       `
@@ -376,7 +332,7 @@ app.get("/api/exams/code/:code", async (req, res) => {
         code,
         exam_code,
         created_at
-      FROM exams
+      FROM hb_exams
       WHERE UPPER(code) = $1
          OR UPPER(exam_code) = $1
       LIMIT 1
@@ -390,11 +346,9 @@ app.get("/api/exams/code/:code", async (req, res) => {
       });
     }
 
-    const exam = result.rows[0];
-
     res.json({
       success: true,
-      exam
+      exam: result.rows[0]
     });
 
   } catch (error) {
@@ -414,6 +368,12 @@ app.post("/api/exams/:id/questions", async (req, res) => {
   try {
     const examId = Number(req.params.id);
 
+    if (!Number.isInteger(examId)) {
+      return res.status(400).json({
+        error: "Exam ID sirrii miti."
+      });
+    }
+
     const question =
       req.body.question ||
       req.body.question_text ||
@@ -424,19 +384,24 @@ app.post("/api/exams/:id/questions", async (req, res) => {
       "multiple";
 
     const optionA =
-      req.body.option_a || "";
+      req.body.option_a ||
+      "";
 
     const optionB =
-      req.body.option_b || "";
+      req.body.option_b ||
+      "";
 
     const optionC =
-      req.body.option_c || "";
+      req.body.option_c ||
+      "";
 
     const optionD =
-      req.body.option_d || "";
+      req.body.option_d ||
+      "";
 
     const correctAnswer =
       req.body.correct_answer ||
+      req.body.correctAnswer ||
       "";
 
     const points =
@@ -451,7 +416,7 @@ app.post("/api/exams/:id/questions", async (req, res) => {
     const exam = await pool.query(
       `
       SELECT id
-      FROM exams
+      FROM hb_exams
       WHERE id = $1
       `,
       [examId]
@@ -465,7 +430,7 @@ app.post("/api/exams/:id/questions", async (req, res) => {
 
     const result = await pool.query(
       `
-      INSERT INTO questions
+      INSERT INTO hb_questions
       (
         exam_id,
         question_text,
@@ -531,7 +496,7 @@ app.get("/api/exams/:id/questions", async (req, res) => {
         option_d,
         points,
         created_at
-      FROM questions
+      FROM hb_questions
       WHERE exam_id = $1
       ORDER BY id ASC
       `,
@@ -560,13 +525,25 @@ app.delete("/api/questions/:id", async (req, res) => {
   try {
     const id = Number(req.params.id);
 
-    await pool.query(
+    if (!Number.isInteger(id)) {
+      return res.status(400).json({
+        error: "Question ID sirrii miti."
+      });
+    }
+
+    const result = await pool.query(
       `
-      DELETE FROM questions
+      DELETE FROM hb_questions
       WHERE id = $1
       `,
       [id]
     );
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({
+        error: "Gaaffiin hin argamne."
+      });
+    }
 
     res.json({
       success: true,
@@ -593,6 +570,7 @@ app.post("/api/exams/:id/submit", async (req, res) => {
 
     const studentName =
       req.body.student_name ||
+      req.body.studentName ||
       "";
 
     const answers =
@@ -608,7 +586,7 @@ app.post("/api/exams/:id/submit", async (req, res) => {
     const examResult = await pool.query(
       `
       SELECT id
-      FROM exams
+      FROM hb_exams
       WHERE id = $1
       `,
       [examId]
@@ -632,7 +610,7 @@ app.post("/api/exams/:id/submit", async (req, res) => {
         option_d,
         correct_answer,
         points
-      FROM questions
+      FROM hb_questions
       WHERE exam_id = $1
       ORDER BY id ASC
       `,
@@ -717,7 +695,7 @@ app.post("/api/exams/:id/submit", async (req, res) => {
 
     await pool.query(
       `
-      INSERT INTO results
+      INSERT INTO hb_results
       (
         exam_id,
         student_name,
@@ -744,11 +722,6 @@ app.post("/api/exams/:id/submit", async (req, res) => {
         })
       ]
     );
-
-    /*
-      BARATAA QABXII HIN ARGUTU.
-      Odeeffannoo bu'aa server irraa hin deebifnu.
-    */
 
     res.json({
       success: true,
@@ -785,7 +758,7 @@ app.get("/api/exams/:id/results", async (req, res) => {
         duration,
         code,
         exam_code
-      FROM exams
+      FROM hb_exams
       WHERE id = $1
       `,
       [examId]
@@ -807,7 +780,7 @@ app.get("/api/exams/:id/results", async (req, res) => {
         percentage,
         answers,
         created_at
-      FROM results
+      FROM hb_results
       WHERE exam_id = $1
       ORDER BY created_at DESC
       `,
@@ -815,8 +788,7 @@ app.get("/api/exams/:id/results", async (req, res) => {
     );
 
     const students = results.rows.map(row => {
-      const data =
-        row.answers || {};
+      const data = row.answers || {};
 
       return {
         id: row.id,
@@ -845,6 +817,42 @@ app.get("/api/exams/:id/results", async (req, res) => {
     res.status(500).json({
       error:
         "Bu'aa qormaataa argachuu irratti rakkoon uumame."
+    });
+  }
+});
+
+/* =========================
+   DELETE EXAM
+========================= */
+
+app.delete("/api/exams/:id", async (req, res) => {
+  try {
+    const examId = Number(req.params.id);
+
+    const result = await pool.query(
+      `
+      DELETE FROM hb_exams
+      WHERE id = $1
+      `,
+      [examId]
+    );
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({
+        error: "Qormaanni hin argamne."
+      });
+    }
+
+    res.json({
+      success: true,
+      message: "Qormaanni haqameera."
+    });
+
+  } catch (error) {
+    console.error("Delete exam error:", error);
+
+    res.status(500).json({
+      error: "Qormaata haquu hin dandeenye."
     });
   }
 });
