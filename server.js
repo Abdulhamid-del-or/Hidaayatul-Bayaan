@@ -46,57 +46,145 @@ function makeCode(length = 8) {
 /* =========================
    DATABASE TABLES
 ========================= */
-
 async function initDatabase() {
-  await pool.query(`
-    CREATE TABLE IF NOT EXISTS exams (
-      id SERIAL PRIMARY KEY,
-      teacher_name TEXT NOT NULL,
-      title TEXT NOT NULL,
-      subject TEXT DEFAULT '',
-      grade TEXT DEFAULT '',
-      duration INTEGER DEFAULT 30,
-      exam_code VARCHAR(20) UNIQUE NOT NULL,
-      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    );
+  const client = await pool.connect();
 
-    CREATE TABLE IF NOT EXISTS questions (
-      id SERIAL PRIMARY KEY,
-      exam_id INTEGER NOT NULL REFERENCES exams(id) ON DELETE CASCADE,
-      question TEXT NOT NULL,
-      type TEXT DEFAULT 'multiple',
-      option_a TEXT DEFAULT '',
-      option_b TEXT DEFAULT '',
-      option_c TEXT DEFAULT '',
-      option_d TEXT DEFAULT '',
-      correct_answer TEXT NOT NULL,
-      points INTEGER DEFAULT 1,
-      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    );
+  try {
+    console.log("🔄 Database initialization started...");
 
-    CREATE TABLE IF NOT EXISTS results (
-      id SERIAL PRIMARY KEY,
-      exam_id INTEGER NOT NULL REFERENCES exams(id) ON DELETE CASCADE,
-      student_name TEXT NOT NULL,
-      score INTEGER DEFAULT 0,
-      total INTEGER DEFAULT 0,
-      percentage INTEGER DEFAULT 0,
-      answers JSONB DEFAULT '{}'::jsonb,
-      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    );
+    await client.query("BEGIN");
 
-    CREATE INDEX IF NOT EXISTS idx_questions_exam_id
-      ON questions(exam_id);
+    // =========================
+    // EXAMS TABLE
+    // =========================
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS exams (
+        id SERIAL PRIMARY KEY
+      )
+    `);
 
-    CREATE INDEX IF NOT EXISTS idx_results_exam_id
-      ON results(exam_id);
+    // Add missing columns automatically
+    await client.query(`
+      ALTER TABLE exams
+      ADD COLUMN IF NOT EXISTS teacher_name TEXT,
+      ADD COLUMN IF NOT EXISTS title TEXT,
+      ADD COLUMN IF NOT EXISTS subject TEXT,
+      ADD COLUMN IF NOT EXISTS grade TEXT,
+      ADD COLUMN IF NOT EXISTS duration INTEGER DEFAULT 30,
+      ADD COLUMN IF NOT EXISTS exam_code TEXT,
+      ADD COLUMN IF NOT EXISTS created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    `);
 
-    CREATE INDEX IF NOT EXISTS idx_exams_exam_code
-      ON exams(exam_code);
-  `);
+    // Unique index for exam code
+    await client.query(`
+      CREATE UNIQUE INDEX IF NOT EXISTS exams_exam_code_unique
+      ON exams(exam_code)
+      WHERE exam_code IS NOT NULL
+    `);
 
-  console.log("✅ Database tables ready.");
+    // =========================
+    // QUESTIONS TABLE
+    // =========================
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS questions (
+        id SERIAL PRIMARY KEY
+      )
+    `);
+
+    await client.query(`
+      ALTER TABLE questions
+      ADD COLUMN IF NOT EXISTS exam_id INTEGER,
+      ADD COLUMN IF NOT EXISTS question TEXT,
+      ADD COLUMN IF NOT EXISTS type TEXT DEFAULT 'multiple',
+      ADD COLUMN IF NOT EXISTS option_a TEXT,
+      ADD COLUMN IF NOT EXISTS option_b TEXT,
+      ADD COLUMN IF NOT EXISTS option_c TEXT,
+      ADD COLUMN IF NOT EXISTS option_d TEXT,
+      ADD COLUMN IF NOT EXISTS correct_answer TEXT,
+      ADD COLUMN IF NOT EXISTS points INTEGER DEFAULT 1,
+      ADD COLUMN IF NOT EXISTS created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    `);
+
+    // Foreign key only if it does not already exist
+    const questionFK = await client.query(`
+      SELECT 1
+      FROM pg_constraint
+      WHERE conname = 'questions_exam_id_fkey'
+    `);
+
+    if (questionFK.rowCount === 0) {
+      await client.query(`
+        ALTER TABLE questions
+        ADD CONSTRAINT questions_exam_id_fkey
+        FOREIGN KEY (exam_id)
+        REFERENCES exams(id)
+        ON DELETE CASCADE
+      `);
+    }
+
+    await client.query(`
+      CREATE INDEX IF NOT EXISTS questions_exam_id_idx
+      ON questions(exam_id)
+    `);
+
+    // =========================
+    // RESULTS TABLE
+    // =========================
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS results (
+        id SERIAL PRIMARY KEY
+      )
+    `);
+
+    await client.query(`
+      ALTER TABLE results
+      ADD COLUMN IF NOT EXISTS exam_id INTEGER,
+      ADD COLUMN IF NOT EXISTS student_name TEXT,
+      ADD COLUMN IF NOT EXISTS score INTEGER DEFAULT 0,
+      ADD COLUMN IF NOT EXISTS total INTEGER DEFAULT 0,
+      ADD COLUMN IF NOT EXISTS percentage NUMERIC DEFAULT 0,
+      ADD COLUMN IF NOT EXISTS answers JSONB DEFAULT '{}'::jsonb,
+      ADD COLUMN IF NOT EXISTS created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    `);
+
+    const resultFK = await client.query(`
+      SELECT 1
+      FROM pg_constraint
+      WHERE conname = 'results_exam_id_fkey'
+    `);
+
+    if (resultFK.rowCount === 0) {
+      await client.query(`
+        ALTER TABLE results
+        ADD CONSTRAINT results_exam_id_fkey
+        FOREIGN KEY (exam_id)
+        REFERENCES exams(id)
+        ON DELETE CASCADE
+      `);
+    }
+
+    await client.query(`
+      CREATE INDEX IF NOT EXISTS results_exam_id_idx
+      ON results(exam_id)
+    `);
+
+    await client.query("COMMIT");
+
+    console.log("✅ Database migrations completed.");
+
+  } catch (error) {
+    await client.query("ROLLBACK");
+
+    console.error("❌ Database initialization failed:");
+    console.error(error.message);
+
+    throw error;
+  } finally {
+    client.release();
+  }
 }
+
+
 
 /* =========================
    HOME
